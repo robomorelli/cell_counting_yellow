@@ -32,10 +32,7 @@ from augmentation_utils import *
 from config import *
 from utils import *
 
-image_ids = os.listdir('./DATA/TRAIN_VAL/all_cropped_images/images/')
-IMG_WIDTH = 1600
-IMG_HEIGTH = 1200
-
+image_ids = os.listdir(LoadImagesForAug)
 split_num = 5
 split_num_new_images = 11
 shift = len(image_ids)

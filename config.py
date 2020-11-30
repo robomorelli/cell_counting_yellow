@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 
+IMG_WIDTH = 1600
+IMG_HEIGTH = 1200
+
 LoadImagesForCrop =  'DATA/TRAIN_VAL/all_images/images/'
 LoadMasksForCrop = 'DATA/TRAIN_VAL/all_masks/masks/'
 SaveCropImages =  'DATA/TRAIN_VAL/all_cropped_images/images/' 
