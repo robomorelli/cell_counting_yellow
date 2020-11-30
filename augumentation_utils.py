@@ -28,10 +28,8 @@ from albumentations import (RandomCrop,CenterCrop,ElasticTransform,RGBShift,Rota
     HueSaturationValue,
 )
 
-from augmentation_utils import *
 from utils import *
 
-image_ids = os.listdir('./DATA/TRAIN_VAL/all_cropped_images/images/')
 IMG_WIDTH = 1600
 IMG_HEIGTH = 1200
 

@@ -13,13 +13,10 @@ from importlib import import_module
 import pickle
 # from numba import jit
 from skimage.morphology import erosion
+
 from utils import *
+from config import *
 
-
-LoadImagesForCrop =  'DATA/TRAIN_VAL/all_images/images/'
-LoadLabelsForCrop = 'DATA/TRAIN_VAL/all_masks/masks/'
-SaveCropImages =  'DATA/TRAIN_VAL/all_cropped_images/images/' 
-SaveCropMasks = 'DATA/TRAIN_VAL/all_cropped_masks/masks/'
 
 IMG_WIDTH = 1600
 IMG_HEIGTH = 1200
@@ -51,4 +48,5 @@ image_ids = [str(num) + '.tiff' for num in Number]
 
 if __name__ == "__main__":
     
-    make_cropper(image_ids, SaveCropImages,SaveCropMasks)
+    make_cropper(image_ids, LoadImagesForCrop, LoadMasksForCrop,
+                  SaveCropImages, SaveCropMasks)
