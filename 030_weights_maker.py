@@ -25,9 +25,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 from skimage.segmentation import find_boundaries
 import pickle
 
-LoadMasksForWeight = './DATASET/TRAIN_VAL/all_cropped_masks/masks/'
-LoadImgsForWeight = './DATASET/TRAIN_VAL/all_cropped_images/images/'
-SaveWeightMasks = './DATASET/TRAIN_VAL/all_weighted_masks/masks/'
+from config import *
 
 image_ids = os.listdir(LoadMasksForWeight)
 

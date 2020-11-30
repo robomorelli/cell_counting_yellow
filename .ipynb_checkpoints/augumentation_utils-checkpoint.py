@@ -1,6 +1,33 @@
+import glob
+import sys
 import numpy as np
 import imageio
 import cv2
+import random
+from skimage import transform
+import os
+from tqdm import tqdm
+from subprocess import check_output
+import matplotlib.pyplot as plt
+from importlib import import_module
+from skimage import io
+import skimage.io
+from skimage.transform import rotate
+from skimage.transform import resize
+from subprocess import check_output
+import albumentations as alb
+from scipy import ndimage
+import matplotlib.pyplot as plt
+from skimage.morphology import watershed, remove_small_holes, remove_small_objects, label, erosion
+from skimage.feature import peak_local_max
+
+from albumentations import (RandomCrop,CenterCrop,ElasticTransform,RGBShift,Rotate,
+    Compose, ToFloat, FromFloat, RandomRotate90, Flip, OneOf, MotionBlur, MedianBlur, Blur,Transpose,
+    ShiftScaleRotate, OpticalDistortion, GridDistortion, RandomBrightnessContrast, VerticalFlip, HorizontalFlip,
+    
+    HueSaturationValue,
+)
+
 
 
 def cropper(image, mask):
@@ -35,37 +62,29 @@ def cropper(image, mask):
             
     return CroppedImgs, CroppedMasks
 
-def read_image_labels(image_id, images_path,  masks_path):
+def read_image_labels(image_id):
      
-        x = cv2.imread(images_path + image_id)
+        x = cv2.imread(LoadImagesForCrop + image_id)
         image = cv2.cvtColor(x, cv2.COLOR_BGR2RGB)
-        mask = cv2.imread(masks_path, + image_id)
+        mask = cv2.imread(LoadLabelsForCrop + image_id)
         mask = cv2.cvtColor(mask, cv2.COLOR_BGR2RGB)
         
         return image, mask
-    
-# def read_image_labels(image_id):
-     
-#         image = cv2.imread(LoadImagesForAug + image_id)
-#         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-#         mask = cv2.imread(LoadLabelsForAug + image_id)
-#         mask = cv2.cvtColor(mask, cv2.COLOR_BGR2RGB)
-        
-#         return image, mask
 
-def make_cropper(image_ids, LoadSaveCropImages, SaveCropMasks, shift = 0):
+def make_cropper(image_ids, SaveCropImages, SaveCropMasks, shift = 0):
     ix = shift
 
     for ax_index, name in tqdm(enumerate(image_ids),total=len(image_ids)):
         
 #         if name == '252.tiff':
 #             print(ix)    
-        image, mask = read_image_labels(name, images_path,  masks_path) 
+        image, mask = read_image_labels(name) 
         if int(name.split('.')[0]) <= 252:
             mask = erosion(np.squeeze(mask[:,:,0:1]), selem=np.ones([2,2]))
         else:
              mask = np.squeeze(mask[:,:,0:1])
             
+       
         CroppedImages, CroppedMasks = cropper(image, mask)                                     
         
         for i in range(0,NumCropped):
@@ -80,18 +99,24 @@ def make_cropper(image_ids, LoadSaveCropImages, SaveCropMasks, shift = 0):
     return
 
 
-# def read_masks(image_id):
+def read_masks(image_id):
      
-#         mask = cv2.imread(LoadMasksForWeight + image_id)
-#         mask = cv2.cvtColor(mask, cv2.COLOR_BGR2RGB)
-        
-#         return mask
-    
-# def read_images(image_id):
-     
-#         mask = cv2.imread(LoadImgsForWeight + image_id)
-#         mask = cv2.cvtColor(mask, cv2.COLOR_BGR2RGB)
+        mask = cv2.imread(LoadMasksForWeight + image_id)
+        mask = cv2.cvtColor(mask, cv2.COLOR_BGR2RGB)
         
         return mask
     
+def read_images(image_id):
+     
+        mask = cv2.imread(LoadImgsForWeight + image_id)
+        mask = cv2.cvtColor(mask, cv2.COLOR_BGR2RGB)
+        
+        return mask
+    
+def read_masks_done(image_id):
+     
+        mask = cv2.imread(SaveWeightMasks + image_id)
+        mask = cv2.cvtColor(mask, cv2.COLOR_BGR2RGB)
+        
+        return mask
     
