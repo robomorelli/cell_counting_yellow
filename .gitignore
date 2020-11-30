@@ -2,4 +2,4 @@
 *.h5
 *.hdf5
 *.pdf
-*.tiff
+DATA/*.tiff
