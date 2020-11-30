@@ -41,10 +41,10 @@ if __name__ == "__main__":
     sigma = 25
     
     if Normalize:
-        make_weights(image_ids,  LoadMasksForWeight, sigma = sigma, maximum=False, SaveWeightMasks)
+        make_weights(image_ids,  LoadMasksForWeight, SaveWeightMasks, sigma = sigma, maximum=False)
         with open('max_weight_{}.pickle'.format(sigma), 'rb') as handle:
             dic = pickle.load(handle)
         maximum = dic['max_weight']
-        make_weights(image_ids,  LoadMasksForWeight, sigma = sigma, maximum=maximum, SaveWeightMasks)
+        make_weights(image_ids,  LoadMasksForWeight, SaveWeightMasks, sigma = sigma, maximum=maximum)
     else:    
-        make_weights(image_ids,  LoadMasksForWeight, sigma = sigma, maximum=maximum, SaveWeightMasks)
+        make_weights(image_ids,  LoadMasksForWeight, SaveWeightMasks, sigma = sigma, maximum=maximum)

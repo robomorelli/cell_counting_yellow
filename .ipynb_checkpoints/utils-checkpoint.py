@@ -59,7 +59,7 @@ def cropper(image, mask):
 
 def make_cropper(image_ids, images_path , masks_path,
                  XCropSize=512, YCropSize=512, XCropCoord=400, YCropCoord = 400,
-                 SaveCropImages, SaveCropMasks, shift = 0):
+                 SaveCropImages=SaveCropImages, SaveCropMasks=SaveCropMasks, shift = 0):
     ix = shift
     # Crop size 
 #     XCropSize = 512

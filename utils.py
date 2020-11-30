@@ -59,7 +59,7 @@ def cropper(image, mask):
 
 def make_cropper(image_ids, images_path , masks_path,
                  XCropSize=512, YCropSize=512, XCropCoord=400, YCropCoord = 400,
-                 SaveCropImages, SaveCropMasks, shift = 0):
+                 SaveCropImages=SaveCropImages, SaveCropMasks=SaveCropMasks, shift = 0):
     ix = shift
     # Crop size 
 #     XCropSize = 512
@@ -105,8 +105,8 @@ def make_cropper(image_ids, images_path , masks_path,
 
 
     
-def make_weights(image_ids,  LoadMasksForWeight, sigma = 25
-                 , maximum=False, SaveWeightMasks):
+def make_weights(image_ids,  LoadMasksForWeight=LoadMasksForWeight, sigma = 25
+                 , maximum=False, SaveWeightMasks=SaveWeightMasks):
     
     if not maximum:
         total = np.zeros((len(image_ids), 512, 512), dtype=np.float32) 
