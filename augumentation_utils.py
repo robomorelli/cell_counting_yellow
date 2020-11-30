@@ -31,11 +31,6 @@ from albumentations import (RandomCrop,CenterCrop,ElasticTransform,RGBShift,Rota
 from augmentation_utils import *
 from utils import *
 
-LoadImagesForAug =  './DATA/TRAIN_VAL/all_cropped_images/images/'
-LoadLabelsForAug = './DATA/TRAIN_VAL/all_weighted_masks/masks/'
-SaveAugImages =  './DATA/TRAIN_VAL/all_cropped_images/images/'
-SaveAugMasks = './DATA/TRAIN_VAL/all_weighted_masks/masks/'
-
 image_ids = os.listdir('./DATA/TRAIN_VAL/all_cropped_images/images/')
 IMG_WIDTH = 1600
 IMG_HEIGTH = 1200
@@ -236,14 +231,15 @@ def data_aug(image ,mask, image_id, nlabels_tar, minimum, maximum):
         
 #         return image, mask
 
-def make_data_augmentation(image_ids, split_num, id_new_images,
+
+def make_data_augmentation(image_ids, images_path,  masks_path, split_num, id_new_images,
                            split_num_new_images, ix, SaveAugImages, SaveAugMasks):
     
     for ax_index, image_id in tqdm(enumerate(image_ids),total=len(image_ids)):
         
         ID = int(image_id.split('.')[0])
 
-        image, mask = read_image_labels(image_id)
+        image, mask = read_image_labels(images_id, images_path,  masks_path)
         
         minimum = mask[:,:,1:2].min()
         maximum = mask[:,:,1:2].max()
@@ -316,14 +312,12 @@ def make_data_augmentation(image_ids, split_num, id_new_images,
                 augmented = gaussian_blur(**data)
                 new_image = augmented["image"]   
 
-                
                 aug_img_dir = SaveAugImages + '{}.tiff'.format(ix)
                 aug_mask_dir = SaveAugMasks + '{}.tiff'.format(ix)
                 ix +=1
 
                 plt.imsave(fname=aug_img_dir, arr = new_image)
-                plt.imsave(fname=aug_mask_dir,arr = mask)
-                
+                plt.imsave(fname=aug_mask_dir,arr = mask)     
                 
         else:
     

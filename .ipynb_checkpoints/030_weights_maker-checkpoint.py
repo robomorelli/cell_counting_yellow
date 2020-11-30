@@ -25,9 +25,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 from skimage.segmentation import find_boundaries
 import pickle
 
-LoadMasksForWeight = './DATASET/TRAIN_VAL/all_cropped_masks/masks/'
-LoadImgsForWeight = './DATASET/TRAIN_VAL/all_cropped_images/images/'
-SaveWeightMasks = './DATASET/TRAIN_VAL/all_weighted_masks/masks/'
+from config import *
 
 image_ids = os.listdir(LoadMasksForWeight)
 
@@ -36,14 +34,15 @@ ix.sort()
 
 image_ids = [str(x)+'.tiff' for x in ix]
 
-def make_weights(image_ids, sigma = 25, maximum=False):
+def make_weights(image_ids,  LoadMasksForWeight, sigma = 25
+                 , maximum=False, SaveWeightMasks):
     
     if not maximum:
         total = np.zeros((len(image_ids), 512, 512), dtype=np.float32) 
     
     for ax_index, name in tqdm(enumerate(image_ids),total=len(image_ids)):
 
-        target = read_masks(name)[:,:,0:1]
+        target = read_masks(LoadMasksForWeight, name)[:,:,0:1]
         target = target.astype(bool)
         target = remove_small_objects(target,min_size = 100)  
         target = remove_small_holes(target,200)
@@ -131,14 +130,14 @@ def make_weights(image_ids, sigma = 25, maximum=False):
 if __name__ == "__main__":
     
     Normalize = False
-    maximum = 
+    maximum = 3.8177538
     sigma = 25
     
     if Normalize:
-        make_cropper(image_ids, sigma = sigma, maximum = False, SaveCropImages, SaveCropMasks)
+        make_weights(image_ids,  LoadMasksForWeight, sigma = 25, maximum=False, SaveWeightMasks)
         with open('max_weight_{}.pickle'.format(sigma), 'rb') as handle:
             dic = pickle.load(handle)
         maximum = dic['max_weight']
-        make_cropper(image_ids, sigma = sigma, maximum = maximum, SaveCropImages, SaveCropMasks)
+        make_weights(image_ids,  LoadMasksForWeight, sigma = 25, maximum=maximum, SaveWeightMasks)
     else:    
-        make_cropper(image_ids, sigma = sigma, maximum = 3.8177538, SaveCropImages, SaveCropMasks)
+        make_weights(image_ids,  LoadMasksForWeight, sigma = 25, maximum=maximum, SaveWeightMasks)

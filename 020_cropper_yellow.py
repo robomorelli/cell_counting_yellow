@@ -47,4 +47,5 @@ image_ids = [str(num) + '.tiff' for num in Number]
 
 if __name__ == "__main__":
     
-    make_cropper(image_ids, SaveCropImages,SaveCropMasks)
+    make_cropper(image_ids, LoadImagesForCrop, LoadMasksForCrop,
+                  SaveCropImages, SaveCropMasks)
