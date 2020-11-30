@@ -196,3 +196,5 @@ def make_weights(image_ids,  LoadMasksForWeight, sigma = 25
         dic['max_weight'] = max(total)
         with open('max_weight_{}.pickle'.format(sigma), 'wb') as handle:
             pickle.dump(dic, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            
+    return 

@@ -28,10 +28,8 @@ from albumentations import (RandomCrop,CenterCrop,ElasticTransform,RGBShift,Rota
     HueSaturationValue,
 )
 
-from augmentation_utils import *
 from utils import *
 
-image_ids = os.listdir('./DATA/TRAIN_VAL/all_cropped_images/images/')
 IMG_WIDTH = 1600
 IMG_HEIGTH = 1200
 
@@ -331,6 +329,8 @@ def make_data_augmentation(image_ids, images_path,  masks_path, split_num, id_ne
 
                 plt.imsave(fname=aug_img_dir, arr = new_image)
                 plt.imsave(fname=aug_mask_dir, arr = new_mask)
+                
+    return
                 
                 
                           
