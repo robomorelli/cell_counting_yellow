@@ -70,3 +70,26 @@ def make_cropper(image_ids, SaveCropImages, SaveCropMasks, shift = 0):
 
             ix +=1
     return
+
+
+def read_masks(image_id):
+     
+        mask = cv2.imread(LoadMasksForWeight + image_id)
+        mask = cv2.cvtColor(mask, cv2.COLOR_BGR2RGB)
+        
+        return mask
+    
+def read_images(image_id):
+     
+        mask = cv2.imread(LoadImgsForWeight + image_id)
+        mask = cv2.cvtColor(mask, cv2.COLOR_BGR2RGB)
+        
+        return mask
+    
+def read_masks_done(image_id):
+     
+        mask = cv2.imread(SaveWeightMasks + image_id)
+        mask = cv2.cvtColor(mask, cv2.COLOR_BGR2RGB)
+        
+        return mask
+    
