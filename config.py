@@ -17,6 +17,10 @@ AllMasks = 'DATASET/all_masks/masks/'
 TrainValImages = 'DATASET/train_val/images_before_crop/images/'
 TrainValMasks = 'DATASET/train_val/masks_before_crop/masks/'
 
+#I'd like to change in this way:
+# TrainValImages = 'DATASET/train_val/full_size/images/'
+# TrainValMasks = 'DATASET/train_val/full_size/masks/'
+
 TestImages = 'DATASET/test/all_images/images/'
 TestMasks = 'DATASET/test/all_masks/masks/'
 
@@ -24,7 +28,13 @@ TestMasks = 'DATASET/test/all_masks/masks/'
 CropImages = 'DATASET/all_cropped_images/images/'
 CropMasks = 'DATASET/all_cropped_masks/masks/'
 
+# This should be oly for validation dataset
+#CropImages = 'DATASET/train_val/cropped/images/'
+#CropMasks = 'DATASET/train_val/cropped/masks/'
+
 # Final folder where the images for train reside, already cropped and augmented and weighted
 # Cropped and augmented images are going to be read from the same folder
 AugImages = 'DATASET/train_val/all_images/images/'
 AugMasks = 'DATASET/train_val/all_masks/masks/'
+
+
