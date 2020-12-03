@@ -36,6 +36,9 @@ if not os.path.exists(AllMasks):
 TrainValImages = 'DATASET/train_val/images_before_crop/images/'
 TrainValMasks = 'DATASET/train_val/masks_before_crop/masks/'
 
+#I'd like to change in this way
+#TrainValImages = 'DATASET/train_val/full_size/images/'
+#TrainValMasks = 'DATASET/train_val/full_size/masks/'
 
 if not os.path.exists(TrainValImages):
     os.makedirs(TrainValImages)
@@ -55,6 +58,10 @@ if not os.path.exists(TestMasks):
 # Folder for all cropped images and masks
 CropImages = 'DATASET/all_cropped_images/images/'
 CropMasks = 'DATASET/all_cropped_masks/masks/'
+
+#This should be only for train_val
+#CropImages = 'DATASET/train_val/cropped/images/'
+#CropMasks = 'DATASET/train_val/cropped/masks/'
 
 if not os.path.exists(CropImages):
     os.makedirs(CropImages)
