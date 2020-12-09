@@ -28,23 +28,23 @@ import pickle
 from config import *
 from utils import *
 
-image_ids = os.listdir(LoadMasksForWeight)
+image_ids = os.listdir(CropMasks)
 ix = [int(x.split('.')[0]) for x in image_ids]
 ix.sort()
 image_ids = [str(x)+'.tiff' for x in ix]
 
-             
+
 if __name__ == "__main__":
-    
+
     Normalize = False
     maximum = 3.8177538
     sigma = 25
-    
+
     if Normalize:
-        make_weights(image_ids,  LoadMasksForWeight, SaveWeightMasks, sigma = sigma, maximum=False)
+        make_weights(image_ids,  CropMasks, CropWeightedMasks, sigma = sigma, maximum=False)
         with open('max_weight_{}.pickle'.format(sigma), 'rb') as handle:
             dic = pickle.load(handle)
         maximum = dic['max_weight']
-        make_weights(image_ids,  LoadMasksForWeight, SaveWeightMasks, sigma = sigma, maximum=maximum)
-    else:    
-        make_weights(image_ids,  LoadMasksForWeight, SaveWeightMasks, sigma = sigma, maximum=maximum)
+        make_weights(image_ids,  CropMasks, CropWeightedMasks, sigma = sigma, maximum=maximum)
+    else:
+        make_weights(image_ids,  CropMasks, CropWeightedMasks, sigma = sigma, maximum=maximum)

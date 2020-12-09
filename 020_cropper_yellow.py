@@ -18,13 +18,13 @@ from utils import *
 from config import *
 
 
-image_ids = os.listdir(LoadImagesForCrop)
+image_ids = os.listdir(TrainValImages)
 Number = [int(num.split('.')[0]) for num in image_ids]
 Number.sort()
 image_ids = [str(num) + '.tiff' for num in Number]
 
 if __name__ == "__main__":
-    
-    make_cropper(image_ids, LoadImagesForCrop , LoadMasksForCrop,
+
+    make_cropper(image_ids, TrainValImages, TrainValMasks, SaveCropImages = CropImages, SaveCropMasks = CropMasks,
                  XCropSize=512, YCropSize=512, XCropCoord=400, YCropCoord = 400,
-                 SaveCropImages, SaveCropMasks, shift = shift)
+                 img_width = IMG_WIDTH, img_height = IMG_HEIGHT)

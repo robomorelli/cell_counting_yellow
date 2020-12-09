@@ -33,8 +33,6 @@ if not os.path.exists(AllImages):
 if not os.path.exists(AllMasks):
     os.makedirs(AllMasks)
 
-#TrainValImages = 'DATASET/train_val/images_before_crop/images/'
-#TrainValMasks = 'DATASET/train_val/masks_before_crop/masks/'
 
 #I'd like to change in this way
 TrainValImages = 'DATASET/train_val/full_size/images/'
@@ -55,24 +53,22 @@ if not os.path.exists(TestImages):
 if not os.path.exists(TestMasks):
     os.makedirs(TestMasks)
 
-# Folder for all cropped images and masks
-#CropImages = 'DATASET/all_cropped_images/images/'
-#CropMasks = 'DATASET/all_cropped_masks/masks/'
-
 #This should be only for train_val
 CropImages = 'DATASET/train_val/cropped/images/'
 CropMasks = 'DATASET/train_val/cropped/masks/'
+CropWeightedMasks = 'DATASET/train_val/cropped/weighted_masks/'
 
 if not os.path.exists(CropImages):
     os.makedirs(CropImages)
 
 if not os.path.exists(CropMasks):
     os.makedirs(CropMasks)
+    os.makedirs(CropWeightedMasks)
 
 # Final folder where the images for train reside, already cropped and augmented and weighted
 # Cropped and augmented images are going to be read from the same folder
-AugImages = 'DATASET/train_val/all_images/images/'
-AugMasks = 'DATASET/train_val/all_masks/masks/'
+AugImages = 'DATASET/train_val/crop_augmented/images/'
+AugMasks = 'DATASET/train_val/crop_augmented/masks/'
 
 if not os.path.exists(AugImages):
     os.makedirs(AugImages)

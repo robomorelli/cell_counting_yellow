@@ -15,7 +15,7 @@ tot_num = len(os.listdir(AllImages))  # 252
 # because we need them in the test (see next jupyter cell)
 NumberTest = 58
 test_names = []
-UpperLimit = tot_num
+UpperLimit = tot_num - len(os.listdir(NewImages))
 
 random.seed(99)
 # collect random number to select test set
@@ -85,5 +85,3 @@ for ix, im_name in enumerate(images_name):
         mask_dir = TrainValMasks + '{}'.format(im_name)
         plt.imsave(fname=img_dir, arr=np.squeeze(img_x))
         plt.imsave(fname=mask_dir, arr=np.squeeze(img_y), cmap='gray')
-
-

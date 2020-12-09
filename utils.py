@@ -1,79 +1,80 @@
 import numpy as np
 import imageio
 import cv2
+import matplotlib.pyplot as plt
+from skimage.morphology import erosion
+from skimage.morphology import watershed, remove_small_holes, remove_small_objects,\
+label, erosion, dilation, local_maxima, skeletonize, binary_erosion, remove_small_holes
+from scipy import ndimage
+import tqdm
+
 from config import *
 
 def read_masks(path, image_id):
 
         mask = cv2.imread(path + image_id)
         mask = cv2.cvtColor(mask, cv2.COLOR_BGR2RGB)
-        
+
         return mask
-    
+
 def read_images(path, image_id):
-     
+
         img = cv2.imread(path + image_id)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        
+
         return img
-    
+
 def read_image_masks(image_id, images_path,  masks_path):
-     
+
         x = cv2.imread(images_path + image_id)
         image = cv2.cvtColor(x, cv2.COLOR_BGR2RGB)
-        mask = cv2.imread(masks_path, + image_id)
+        mask = cv2.imread(masks_path + image_id)
         mask = cv2.cvtColor(mask, cv2.COLOR_BGR2RGB)
-        
+
         return image, mask
 
-def cropper(image, mask):
-    
+def cropper(image, mask, NumCropped, XCropSize, YCropSize , XCropCoord, YCropCoord
+            ,x_coord, y_coord ,XShift, YShift):
+
     CroppedImgs = np.zeros((NumCropped, YCropSize, XCropSize, 3), np.uint8)
     CroppedMasks = np.zeros((NumCropped, YCropSize, XCropSize), np.uint8)
     idx = 0
-    
+
     for i in range(0, 4):
         for j in range(0, 3):
-                
+
                 if (i == 0) & (j == 0):
                     CroppedImgs[idx] = image[y_coord[j]:y_coord[j+1] + YShift, x_coord[i]:x_coord[i+1] + XShift]
                     CroppedMasks[idx] = mask[y_coord[j]:y_coord[j+1] + YShift, x_coord[i]:x_coord[i+1] + XShift]
-                    idx +=1 
+                    idx +=1
 
                 if (i == 0) & (j != 0):
                     CroppedImgs[idx] = image[y_coord[j] - YShift : y_coord[j+1], x_coord[i]:x_coord[i+1] + XShift]
                     CroppedMasks[idx] = mask[y_coord[j] - YShift : y_coord[j+1], x_coord[i]:x_coord[i+1] + XShift]
-                    idx +=1 
+                    idx +=1
 
                 if (i != 0) &  (j == 0):
                     CroppedImgs[idx] = image[y_coord[j]:y_coord[j+1] + YShift, x_coord[i] - XShift :x_coord[i+1]]
                     CroppedMasks[idx] = mask[y_coord[j]:y_coord[j+1] + YShift, x_coord[i] - XShift :x_coord[i+1]]
-                    idx +=1 
+                    idx +=1
 
                 if (i != 0) &  (j != 0):
                     CroppedImgs[idx] = image[y_coord[j] - YShift : y_coord[j+1], x_coord[i] - XShift :x_coord[i+1]]
                     CroppedMasks[idx] = mask[y_coord[j] - YShift : y_coord[j+1], x_coord[i] - XShift :x_coord[i+1]]
-                    idx +=1   
-            
+                    idx +=1
+
     return CroppedImgs, CroppedMasks
 
-def make_cropper(image_ids, images_path , masks_path,
-                 XCropSize=512, YCropSize=512, XCropCoord=400, YCropCoord = 400,
-                 SaveCropImages=SaveCropImages, SaveCropMasks=SaveCropMasks, shift = 0):
+def make_cropper(image_ids, images_path , masks_path, SaveCropImages, SaveCropMasks,
+                 XCropSize=512, YCropSize=512, XCropCoord=400, YCropCoord = 400
+                 , img_width = IMG_WIDTH, img_height = IMG_HEIGHT,
+                  shift = 0):
     ix = shift
-    # Crop size 
-#     XCropSize = 512
-#     YCropSize = 512
-    # if the coord are lesser than the crop size
-    # overlapping between crop is allowed
-    # if XCropCoord = XCropSize and same for Y coord, no overlapping beetween crop
-#     XCropCoord = 400
-#     YCropCoord = 400
 
-    XCropNum = int(IMG_WIDTH/XCropCoord)
-    YCropNum = int(IMG_HEIGTH/YCropCoord)
+    XCropNum = int(img_width/XCropCoord)
+    YCropNum = int(img_height/YCropCoord)
 
-    NumCropped = int(IMG_WIDTH/XCropCoord * IMG_HEIGTH/YCropCoord)
+    NumCropped = int(img_width/XCropCoord * img_height/YCropCoord)
 
     YShift = YCropSize - YCropCoord
     XShift = XCropSize - XCropCoord
@@ -81,21 +82,25 @@ def make_cropper(image_ids, images_path , masks_path,
     x_coord = [XCropCoord*i for i in range(0, XCropNum+1)]
     y_coord = [YCropCoord*i for i in range(0, YCropNum+1)]
 
-    
-    for ax_index, name in tqdm(enumerate(image_ids),total=len(image_ids)):
-        
-        image, mask = read_image_masks(name, images_path,  masks_path) 
+    for ax_index, name in enumerate(image_ids):
+
+        image, mask = read_image_masks(name, images_path,  masks_path)
+
         if int(name.split('.')[0]) <= 252:
             mask = erosion(np.squeeze(mask[:,:,0:1]), selem=np.ones([2,2]))
         else:
-             mask = np.squeeze(mask[:,:,0:1])
-            
-        CroppedImages, CroppedMasks = cropper(image, mask)                                     
-        
+            mask = np.squeeze(mask[:,:,0:1])
+
+        CroppedImages, CroppedMasks = cropper(image, mask, NumCropped
+                                             ,XCropSize, YCropSize
+                                             ,XCropCoord, YCropCoord
+                                             ,x_coord, y_coord
+                                             ,XShift, YShift)
+
         for i in range(0,NumCropped):
-            
+
             crop_imgs_dir = SaveCropImages + '{}.tiff'.format(ix)
-            crop_masks_dir = SaveCropMasks + '{}.tiff'.format(ix) 
+            crop_masks_dir = SaveCropMasks + '{}.tiff'.format(ix)
 
             plt.imsave(fname= crop_imgs_dir, arr = CroppedImages[i])
             plt.imsave(fname= crop_masks_dir,arr = CroppedMasks[i], cmap='gray')
@@ -104,18 +109,18 @@ def make_cropper(image_ids, images_path , masks_path,
     return
 
 
-    
-def make_weights(image_ids,  LoadMasksForWeight=LoadMasksForWeight, sigma = 25
-                 , maximum=False, SaveWeightMasks=SaveWeightMasks):
-    
+
+def make_weights(image_ids,  LoadMasksForWeight, SaveWeightMasks, sigma = 25
+                 , maximum=False):
+
     if not maximum:
-        total = np.zeros((len(image_ids), 512, 512), dtype=np.float32) 
-    
-    for ax_index, name in tqdm(enumerate(image_ids),total=len(image_ids)):
+        total = np.zeros((len(image_ids), 512, 512), dtype=np.float32)
+
+    for ax_index, name in enumerate(image_ids):
 
         target = read_masks(LoadMasksForWeight, name)[:,:,0:1]
         target = target.astype(bool)
-        target = remove_small_objects(target,min_size = 100)  
+        target = remove_small_objects(target,min_size = 100)
         target = remove_small_holes(target,200)
         target = target.astype(np.uint8)*255
 
@@ -142,7 +147,7 @@ def make_weights(image_ids,  LoadMasksForWeight=LoadMasksForWeight, sigma = 25
 
             for idx,obj in enumerate(mask_objs):
                 new_image = np.zeros_like(mask)
-                new_image[obj[0].start:obj[0].stop,obj[1].start:obj[1].stop] = mask[obj]  
+                new_image[obj[0].start:obj[0].stop,obj[1].start:obj[1].stop] = mask[obj]
 
                 new_image = np.clip(new_image, 0, 1).astype(np.uint8)
                 new_image *= 255
@@ -167,7 +172,7 @@ def make_weights(image_ids,  LoadMasksForWeight=LoadMasksForWeight, sigma = 25
 
                 weighted_mask = cv2.add(weighted_mask, w, mask = mask_sum)
 
-            # Complete from inner to edge with 1.5 as weight 
+            # Complete from inner to edge with 1.5 as weight
             weighted_mask = np.clip(weighted_mask, 1, weighted_mask.max())
 
             mul = target*1.5/255
@@ -175,26 +180,26 @@ def make_weights(image_ids,  LoadMasksForWeight=LoadMasksForWeight, sigma = 25
             mul = np.clip(mul,1,mul.max())
 
             weighted_maskk = cv2.multiply(weighted_mask, mul)
-            
-        target = np.clip(target, 0 , 1)
-        final_target = np.dstack((target, weighted_maskkk, null))
-    
+
         if not maximum:
             total[ax_index] = weighted_maskk
-            
-        else:     
+
+        else:
             if (weighted_maskk.max()/(maximum+0.0001))> 1:
                 break
             weighted_maskk = weighted_maskk*1/maximum
+            target = np.clip(target, 0 , 1)
+            final_target = np.dstack((target, weighted_maskk, null))
+
             mask_dir = SaveWeightMasks + '{}'.format(name)
             print('saving {}'.format(name))
             plt.imsave(fname=mask_dir,arr = final_target)
-            
-    if not maximum:   
+
+    if not maximum:
         np.save('total.npy', total)
         dic = {}
         dic['max_weight'] = max(total)
         with open('max_weight_{}.pickle'.format(sigma), 'wb') as handle:
             pickle.dump(dic, handle, protocol=pickle.HIGHEST_PROTOCOL)
-            
-    return 
+
+    return
