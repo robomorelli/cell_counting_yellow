@@ -24,7 +24,7 @@ from skimage.feature import peak_local_max
 from albumentations import (RandomCrop,CenterCrop,ElasticTransform,RGBShift,Rotate,
     Compose, ToFloat, FromFloat, RandomRotate90, Flip, OneOf, MotionBlur, MedianBlur, Blur,Transpose,
     ShiftScaleRotate, OpticalDistortion, GridDistortion, RandomBrightnessContrast, VerticalFlip, HorizontalFlip,
-    
+
     HueSaturationValue,
 )
 
@@ -32,14 +32,12 @@ from augmentation_utils import *
 from config import *
 from utils import *
 
-image_ids = os.listdir(LoadImagesForAug)
+image_ids = os.listdir(CropImages)
 split_num = 5
 split_num_new_images = 11
 shift = len(image_ids)
 
 if __name__ == "__main__":
-    
-    make_data_augmentation(image_ids, LoadImagesForAug,  LoadMasksForAug, split_num, id_new_images,
-                           split_num_new_images, ix, SaveAugImages, SaveAugMasks)
 
-
+    make_data_augmentation(image_ids, CropImages,  CropWeightedMasks, split_num, id_new_images,
+                           split_num_new_images, ix, AugCropImages, AugCropMasks)

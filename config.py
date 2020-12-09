@@ -67,8 +67,8 @@ if not os.path.exists(CropMasks):
 
 # Final folder where the images for train reside, already cropped and augmented and weighted
 # Cropped and augmented images are going to be read from the same folder
-AugImages = 'DATASET/train_val/crop_augmented/images/'
-AugMasks = 'DATASET/train_val/crop_augmented/masks/'
+AugCropImages = 'DATASET/train_val/crop_augmented/images/'
+AugCropMasks = 'DATASET/train_val/crop_augmented/masks/'
 
 if not os.path.exists(AugImages):
     os.makedirs(AugImages)
