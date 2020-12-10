@@ -63,6 +63,7 @@ if not os.path.exists(CropImages):
 
 if not os.path.exists(CropMasks):
     os.makedirs(CropMasks)
+if not os.path.exists(CropWeightedMasks):
     os.makedirs(CropWeightedMasks)
 
 # Final folder where the images for train reside, already cropped and augmented and weighted
@@ -70,8 +71,8 @@ if not os.path.exists(CropMasks):
 AugCropImages = 'DATASET/train_val/crop_augmented/images/'
 AugCropMasks = 'DATASET/train_val/crop_augmented/masks/'
 
-if not os.path.exists(AugImages):
-    os.makedirs(AugImages)
+if not os.path.exists(AugCropImages):
+    os.makedirs(AugCropImages)
 
-if not os.path.exists(AugMasks):
-    os.makedirs(AugMasks)
+if not os.path.exists(AugCropMasks):
+    os.makedirs(AugCropMasks)

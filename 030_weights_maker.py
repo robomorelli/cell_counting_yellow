@@ -24,6 +24,8 @@ from skimage.feature import peak_local_max
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from skimage.segmentation import find_boundaries
 import pickle
+import argparse
+import logging
 
 from config import *
 from utils import *
@@ -36,15 +38,30 @@ image_ids = [str(x)+'.tiff' for x in ix]
 
 if __name__ == "__main__":
 
-    Normalize = False
-    maximum = 3.8177538
-    sigma = 25
+    parser = argparse.ArgumentParser(description='weighting masks')
 
-    if Normalize:
-        make_weights(image_ids,  CropMasks, CropWeightedMasks, sigma = sigma, maximum=False)
-        with open('max_weight_{}.pickle'.format(sigma), 'rb') as handle:
-            dic = pickle.load(handle)
-        maximum = dic['max_weight']
-        make_weights(image_ids,  CropMasks, CropWeightedMasks, sigma = sigma, maximum=maximum)
+    parser.add_argument('--CropMasks', nargs="?", default = CropMasks, help='path including mask to crop')
+    parser.add_argument('--CropWeightedMasks', nargs="?", default = CropWeightedMasks, help='path where save weighted mask')
+    parser.add_argument('--save_images_path', nargs="?", default = CropImages, help='save images path')
+    parser.add_argument('--normalize', nargs="?", type = bool, default = False,  help='find the maximum for normalization')
+    parser.add_argument('--continue_after_normalization', nargs="?", type = bool, default = False,  help='find the maximum for normalization')
+    parser.add_argument('--resume_after_normalization', nargs="?", type = bool, default = False,  help='find the maximum for normalization')
+    parser.add_argument('--maximum', nargs="?", type = int, default = 3.8177538,  help='Maximum value for normalization')
+    parser.add_argument('--sigma', nargs="?", type = int, default = 25,  help='kernel for cumpling cell deacaying influence')
+
+    args = parser.parse_args()
+
+    if args.normalize:
+        make_weights(image_ids,  args.CropMasks, args.CropWeightedMasks, sigma = args.sigma, maximum=False)
+        if args.continue_after_normalization:
+            with open('max_weight_{}.pickle'.format(sigma), 'rb') as handle:
+                dic = pickle.load(handle)
+            maximum = dic['max_weight']
+            make_weights(image_ids,  args.CropMasks, args.CropWeightedMasks, sigma = args.sigma, maximum=args.maximum)
+        elif args.resume_after_normalization:
+            with open('max_weight_{}.pickle'.format(sigma), 'rb') as handle:
+                dic = pickle.load(handle)
+            maximum = dic['max_weight']
+            make_weights(image_ids,  args.CropMasks, args.CropWeightedMasks, sigma = args.sigma, maximum=args.maximum)
     else:
-        make_weights(image_ids,  CropMasks, CropWeightedMasks, sigma = sigma, maximum=maximum)
+        make_weights(image_ids,  args.CropMasks, args.CropWeightedMasks, sigma = args.sigma, maximum=args.smaximum)

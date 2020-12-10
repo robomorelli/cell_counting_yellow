@@ -182,6 +182,7 @@ def make_weights(image_ids,  LoadMasksForWeight, SaveWeightMasks, sigma = 25
             weighted_maskk = cv2.multiply(weighted_mask, mul)
 
         if not maximum:
+            print('{} on {}'.format(ax_index, len(total)))
             total[ax_index] = weighted_maskk
 
         else:
