@@ -35,9 +35,12 @@ from utils import *
 image_ids = os.listdir(CropImages)
 split_num = 5
 split_num_new_images = 11
-shift = len(image_ids)
+id_new_images = len(image_ids)
+shift = 0
+id_edges = [804]
+
 
 if __name__ == "__main__":
 
     make_data_augmentation(image_ids, CropImages,  CropWeightedMasks, split_num, id_new_images,
-                           split_num_new_images, ix, AugCropImages, AugCropMasks)
+                           split_num_new_images, id_edges, AugCropImages, AugCropMasks,  ix = shift)
