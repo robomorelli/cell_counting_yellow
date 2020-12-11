@@ -33,7 +33,6 @@ if not os.path.exists(AllImages):
 if not os.path.exists(AllMasks):
     os.makedirs(AllMasks)
 
-
 #I'd like to change in this way
 TrainValImages = 'DATASET/train_val/full_size/images/'
 TrainValMasks = 'DATASET/train_val/full_size/masks/'

@@ -4,6 +4,9 @@ import os
 import cv2
 import matplotlib.pyplot as plt
 from config import *
+import argparse
+import logging
+import shutil
 
 IMG_CHANNELS = 3
 
@@ -29,7 +32,7 @@ while len(test_names) < NumberTest:
         continue
 
 test_names.append(254)  # maccheroni images needed in the test
-test_names.append(81)  # yellow strip artifact
+test_names.append(171)  # yellow strip artifact
 test_names.sort()
 
 # Our images name are 0.tiff, 1.tiff and so on
@@ -51,37 +54,57 @@ images_name = [str(x) + '.tiff' for x in images_name]
 # 0 for black and 255 for white this could be related to spurious saving effect from
 # GIMP and imageJ software (interpolation???). We need to reset only 0 and 255 value
 # We did in the #############Processing############### section below
-for ix, im_name in enumerate(images_name):
+def main():
 
-    #############Processing###############
+    for ix, im_name in enumerate(images_name):
+        #############Processing###############
+        print(im_name)
+        img_x = cv2.imread(str(AllImages) + im_name)
+        img_x = cv2.cvtColor(img_x, cv2.COLOR_BGR2RGB)
+        img_y = cv2.imread(str(AllMasks) + im_name)
+        img_y = cv2.cvtColor(img_y, cv2.COLOR_BGR2RGB)[:, :, 0:1]
 
-    print(im_name)
-    img_x = cv2.imread(str(AllImages) + im_name)
-    img_x = cv2.cvtColor(img_x, cv2.COLOR_BGR2RGB)
-    img_y = cv2.imread(str(AllMasks) + im_name)
-    img_y = cv2.cvtColor(img_y, cv2.COLOR_BGR2RGB)[:, :, 0:1]
+        #############Processing###############
+        if len(np.unique(img_y)) > 2:
+            print(' restoring {}'.format(im_name))
 
-    #############Processing###############
-    if len(np.unique(img_y)) > 2:
-        print(' restoring {}'.format(im_name))
+            ret, img_y = cv2.threshold(img_y, 75, 255, cv2.THRESH_BINARY)
 
-        ret, img_y = cv2.threshold(img_y, 75, 255, cv2.THRESH_BINARY)
+        img_y = img_y.astype(bool)
+        img_y = img_y.astype(np.uint8) * 255
 
-    img_y = img_y.astype(bool)
-    img_y = img_y.astype(np.uint8) * 255
+        #############Saving in new folder###############
 
-    #############Saving in new folder###############
+        if int(im_name.split('.')[0]) in test_names:
+            print('test')
+            img_dir = TestImages + '{}'.format(im_name)
+            mask_dir = TestMasks + '{}'.format(im_name)
+            plt.imsave(fname=img_dir, arr=np.squeeze(img_x))
+            plt.imsave(fname=mask_dir, arr=np.squeeze(img_y), cmap='gray')
 
-    if int(im_name.split('.')[0]) in test_names:
-        print('test')
-        img_dir = TestImages + '{}'.format(im_name)
-        mask_dir = TestMasks + '{}'.format(im_name)
-        plt.imsave(fname=img_dir, arr=np.squeeze(img_x))
-        plt.imsave(fname=mask_dir, arr=np.squeeze(img_y), cmap='gray')
+        else:
+            img_dir = TrainValImages + '{}'.format(im_name)
+            mask_dir = TrainValMasks + '{}'.format(im_name)
+            plt.imsave(fname=img_dir, arr=np.squeeze(img_x))
+            plt.imsave(fname=mask_dir, arr=np.squeeze(img_y), cmap='gray')
 
-    else:
+if __name__ == "__main__":
 
-        img_dir = TrainValImages + '{}'.format(im_name)
-        mask_dir = TrainValMasks + '{}'.format(im_name)
-        plt.imsave(fname=img_dir, arr=np.squeeze(img_x))
-        plt.imsave(fname=mask_dir, arr=np.squeeze(img_y), cmap='gray')
+    parser = argparse.ArgumentParser(description='Define parameters for crop.')
+    parser.add_argument('--start_from_zero', nargs="?", default = False, help='remove existing file in the destination folder')
+    args = parser.parse_args()
+
+    if args.start_from_zero:
+        print('deleting existing files in destination folder')
+        shutil.rmtree(TrainValImages)
+        os.makedirs(TrainValImages)
+        shutil.rmtree(TrainValMasks)
+        os.makedirs(TrainValMasks)
+
+        shutil.rmtree(TestImages)
+        os.makedirs(TestImages)
+        shutil.rmtree(TestMasks)
+        os.makedirs(TestMasks)
+        print('Splitting image in train_val and test')
+
+    main()

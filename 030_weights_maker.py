@@ -51,6 +51,12 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    if args.start_from_zero:
+        print('deleting existing files in destination folder')
+        shutil.rmtree(CropWeightedMasks)
+        os.makedirs(CropWeightedMasks)
+        print('start new weighting mask')
+
     if args.normalize:
         make_weights(image_ids,  args.CropMasks, args.CropWeightedMasks, sigma = args.sigma, maximum=False)
         if args.continue_after_normalization:

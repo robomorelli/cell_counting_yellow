@@ -15,6 +15,7 @@ import pickle
 from skimage.morphology import erosion
 import argparse
 import logging
+import shutil
 
 from utils import *
 from config import *
@@ -28,6 +29,8 @@ image_ids = [str(num) + '.tiff' for num in Number]
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Define parameters for crop.')
+
+    parser.add_argument('--start_from_zero', nargs="?", default = False, help='remove previous file in the destination folder')
 
     parser.add_argument('--images_path', nargs="?", default = TrainValImages, help='the folder including the images to crop')
     parser.add_argument('--masks_path', nargs="?", default = TrainValMasks, help='the folder including the masks to crop')
@@ -43,6 +46,15 @@ if __name__ == "__main__":
     parser.add_argument('--img_height', nargs="?", type = int, default = IMG_HEIGHT,  help='height of images to crop')
 
     args = parser.parse_args()
+
+    if args.start_from_zero:
+        print('deleting existing files in destination folder')
+        shutil.rmtree(CropImages)
+        os.makedirs(CropImages)
+
+        shutil.rmtree(CropMasks)
+        os.makedirs(CropMasks)
+        print('start to crop')
 
     make_cropper(image_ids = image_ids, images_path = args.images_path, masks_path = args.masks_path
                  ,SaveCropImages = args.save_images_path, SaveCropMasks = args.save_masks_path,

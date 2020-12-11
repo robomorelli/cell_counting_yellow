@@ -20,6 +20,9 @@ from scipy import ndimage
 import matplotlib.pyplot as plt
 from skimage.morphology import watershed, remove_small_holes, remove_small_objects, label, erosion
 from skimage.feature import peak_local_max
+import argparse
+import logging
+import shutil
 
 from albumentations import (RandomCrop,CenterCrop,ElasticTransform,RGBShift,Rotate,
     Compose, ToFloat, FromFloat, RandomRotate90, Flip, OneOf, MotionBlur, MedianBlur, Blur,Transpose,
@@ -35,12 +38,43 @@ from utils import *
 image_ids = os.listdir(CropImages)
 split_num = 5
 split_num_new_images = 11
-id_new_images = len(image_ids)
-shift = 0
+shift = len(image_ids)
 id_edges = [804, 993, 1152, 1569, 2325, 2330, 2328, 2327]
 
-
 if __name__ == "__main__":
+
+    with open('id_new_images.pickle', 'rb') as handle:
+        dic = pickle.load(handle)
+    id_new_image = dic['id_new_images']
+
+    print(id_new_image)
+
+    parser = argparse.ArgumentParser(description='Define parameters for crop.')
+    parser.add_argument('--start_from_zero', nargs="?", default = False, help='remove previous file in the destination folder')
+
+    args = parser.parse_args()
+
+    if args.start_from_zero:
+        print('deleting existing files in destination folder')
+        shutil.rmtree(AugCropImages)
+        os.makedirs(AugCropImages)
+
+        shutil.rmtree(AugCropMasks)
+        os.makedirs(AugCropMasks)
+        print('starting augmentation')
+
+    src_files = os.listdir(CropImages)
+    for file_name in src_files:
+        full_file_name = os.path.join(CropImages, file_name)
+        if os.path.isfile(full_file_name):
+            shutil.copy(full_file_name, AugCropImages)
+
+    src_files = os.listdir(CropWeightedMasks)
+    for file_name in src_files:
+        full_file_name = os.path.join(CropWeightedMasks, file_name)
+        if os.path.isfile(full_file_name):
+            shutil.copy(full_file_name, AugCropMasks)
+
 
     make_data_augmentation(image_ids, CropImages,  CropWeightedMasks, split_num, id_new_images,
                            split_num_new_images, id_edges, AugCropImages, AugCropMasks,  ix = shift)

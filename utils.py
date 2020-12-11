@@ -7,6 +7,7 @@ from skimage.morphology import watershed, remove_small_holes, remove_small_objec
 label, erosion, dilation, local_maxima, skeletonize, binary_erosion, remove_small_holes
 from scipy import ndimage
 import tqdm
+import pickle
 
 from config import *
 
@@ -70,6 +71,7 @@ def make_cropper(image_ids, images_path , masks_path, SaveCropImages, SaveCropMa
                  , img_width = IMG_WIDTH, img_height = IMG_HEIGHT,
                   shift = 0):
     ix = shift
+    flag_new_images = False
 
     XCropNum = int(img_width/XCropCoord)
     YCropNum = int(img_height/YCropCoord)
@@ -83,6 +85,16 @@ def make_cropper(image_ids, images_path , masks_path, SaveCropImages, SaveCropMa
     y_coord = [YCropCoord*i for i in range(0, YCropNum+1)]
 
     for ax_index, name in enumerate(image_ids):
+        print(int(name.split('.')[0]))
+
+        if (int(name.split('.')[0]) >= 252) & (not(flag_new_images)):
+            print('start cropping on new images at ids {}'.format(ix))
+            dic = {}
+            dic['id_new_images'] = int(name.split('.')[0])
+            with open('id_new_images.pickle', 'wb') as handle:
+                 pickle.dump(dic, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+            flag_new_images = True
 
         image, mask = read_image_masks(name, images_path,  masks_path)
 
