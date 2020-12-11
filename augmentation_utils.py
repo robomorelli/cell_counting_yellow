@@ -254,7 +254,7 @@ def make_data_augmentation(image_ids, images_path,  masks_path, split_num, id_st
             print(ID, ix)
             for i in range(80):
 
-                image, mask = read_image_masks(image_id)
+                image, mask = read_image_masks(image_id, images_path,  masks_path)
 
                 augmentation = edges_aug(p = 1)
                 data = {"image": image}
@@ -277,7 +277,7 @@ def make_data_augmentation(image_ids, images_path,  masks_path, split_num, id_st
 
             for i in range(35):
 
-                image, mask = read_image_masks(image_id)
+                image, mask = read_image_masks(image_id, images_path,  masks_path)
 
                 alfa = random.choice([30,30,30, 40])
                 alfa_affine = random.choice([20,20,20,30, 40, 40])
@@ -305,7 +305,7 @@ def make_data_augmentation(image_ids, images_path,  masks_path, split_num, id_st
 
             for blur in range(1 , 39, 3):
 
-                image, mask = read_image_masks(image_id)
+                image, mask = read_image_masks(image_id, images_path,  masks_path)
 
                 blur_limit = blur
                 gaussian_blur = Gaussian(p = 1, blur_limit= blur_limit)
