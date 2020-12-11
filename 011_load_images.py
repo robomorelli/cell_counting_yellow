@@ -20,12 +20,18 @@ NumberTest = 58
 test_names = []
 UpperLimit = tot_num - len(os.listdir(NewImages))
 
-random.seed(99)
+###########################TO DO ############################
+###########################TO DO ############################
+###########################TO DO ############################
+random.seed(99) # FIX the SEED#
 # collect random number to select test set
 # until 58 names are completed
+###########################TO DO ############################
+###########################TO DO ############################
+###########################TO DO ############################
 
 while len(test_names) < NumberTest:
-    x = random.randint(0, UpperLimit)
+x = random.randint(0, UpperLimit)
     if x not in test_names:
         test_names.append(x)
     else:
