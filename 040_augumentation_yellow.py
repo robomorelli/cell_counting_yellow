@@ -37,7 +37,7 @@ split_num = 5
 split_num_new_images = 11
 id_new_images = len(image_ids)
 shift = 0
-id_edges = [1, 804]
+id_edges = [804, 993, 1152, 1569, 2325, 2330, 2328, 2327]
 
 
 if __name__ == "__main__":

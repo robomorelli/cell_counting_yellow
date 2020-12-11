@@ -290,12 +290,6 @@ def make_data_augmentation(image_ids, images_path,  masks_path, split_num, id_st
 
                 new_mask[:,:,1:2] =np.clip(new_mask[:,:,1:2], minimum, maximum)
 
-#                 new_image = new_image*1./255
-#                 new_mask = new_mask*1./255
-
-#                 new_image.astype(float)
-#                 new_mask.astype(float)
-
                 aug_img_dir = SaveAugImages + '{}.tiff'.format(ix)
                 aug_mask_dir = SaveAugMasks + '{}.tiff'.format(ix)
                 ix +=1
