@@ -44,7 +44,7 @@ if __name__ == "__main__":
     parser.add_argument('--CropWeightedMasks', nargs="?", default = CropWeightedMasks, help='path where save weighted mask')
     parser.add_argument('--save_images_path', nargs="?", default = CropImages, help='save images path')
     parser.add_argument('--normalize', nargs="?", type = bool, default = False,  help='find the maximum for normalization')
-    parser.add_argument('--start_from_zero', nargs="?", type = bool, default = False,  help='fstart from zero')
+    parser.add_argument('--start_from_zero', nargs="?", type = bool, default = False,  help='delete all file in destination folder')
     parser.add_argument('--continue_after_normalization', nargs="?", type = bool, default = False,  help='find the maximum for normalization')
     parser.add_argument('--resume_after_normalization', nargs="?", type = bool, default = False,  help='find the maximum for normalization')
     parser.add_argument('--maximum', nargs="?", type = int, default = 3.8177538,  help='Maximum value for normalization')
