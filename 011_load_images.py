@@ -36,6 +36,7 @@ while len(test_names) < NumberTest:
         test_names.append(x)
     else:
         continue
+        
 
 test_names.append(254)  # maccheroni images needed in the test
 test_names.append(171)  # yellow strip artifact

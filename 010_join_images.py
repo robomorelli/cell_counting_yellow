@@ -42,7 +42,7 @@ def main():
 
         img_y = img_y.astype(bool)
         img_y = remove_small_objects(img_y, min_size=15)
-        img_y = erosion(np.squeeze(img_y[:, :, 0:1]), selem=np.ones([2, 2]))
+        img_y = erosion(np.squeeze(img_y), selem=np.ones([2, 2]))
         img_y = img_y.astype(np.uint8) * 255
 
         img_dir = AllImages + '{}.tiff'.format(ix)

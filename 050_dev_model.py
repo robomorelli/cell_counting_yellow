@@ -146,16 +146,14 @@ def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
     c0 = BatchNormalization()(c0)
     c0 = Activation('elu')(c0)
 
-    c1 = Conv2D(4*n, (7, 7), padding='same',  kernel_initializer='he_normal')(c0)
+    c1 = Conv2D(4*n, (3, 3), padding='same',  kernel_initializer='he_normal')(c0)
     c1 = BatchNormalization()(c1)
     c1 = Activation('elu')(c1)
 
     c1 = Conv2D(4*n, (3, 3), padding='same', kernel_initializer='he_normal')(c1)
 
     p1 = MaxPooling2D((2, 2))(c1)
-
     ##########################################
-
     X_shortcut = Conv2D(8*n, (1, 1), padding='same', kernel_initializer='he_normal')(p1)
     # X_shortcut = BatchNormalization()(X_shortcut)
 
@@ -172,7 +170,6 @@ def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
     p2 = MaxPooling2D((2, 2))(c2)
 
     ##########################################
-
     X_shortcut = Conv2D(16*n, (1, 1), padding='same', kernel_initializer='he_normal')(p2)
     # X_shortcut = BatchNormalization()(X_shortcut)
 
@@ -187,9 +184,7 @@ def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
     c3 = Add()([c3, X_shortcut])
 
     p3 = MaxPooling2D((2, 2))(c3)
-
     ###################Bridge#######################
-
     X_shortcut = Conv2D(32*n, (1, 1), padding='same', kernel_initializer='he_normal')(p3)
     # X_shortcut = BatchNormalization()(X_shortcut)
 
@@ -213,15 +208,12 @@ def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
     c5 = Conv2D(32*n, (5, 5), padding='same',kernel_initializer='he_normal')(c5)
 
     c5 = Add()([c5, X_shortcut])
-
     ###################END BRIDGE#######################
-
     X_shortcut = Conv2DTranspose(16*n, (2, 2), strides=(2, 2), padding='same') (c5)
     # X_shortcut = BatchNormalization()(X_shortcut)
     u6 = concatenate([X_shortcut, c3])
 
     # u6 = Conv2D(16*n, (1, 1), padding='same', kernel_initializer='he_normal')(u6)
-
     c6 = BatchNormalization()(u6)
     c6 = Activation('elu')(c6)
     c6 = Conv2D(16*n, (3, 3), padding='same', kernel_initializer='he_normal')(c6)
@@ -231,9 +223,7 @@ def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
     c6 = Conv2D(16*n, (3, 3), padding='same', kernel_initializer='he_normal')(c6)
 
     c6 = Add()([c6, X_shortcut])
-
     ################################################
-
     X_shortcut = Conv2DTranspose(8*n, (2, 2), strides=(2, 2), padding='same') (c6)
     # X_shortcut = BatchNormalization()(X_shortcut)
     u7 = concatenate([X_shortcut, c2])
@@ -253,7 +243,6 @@ def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
     X_shortcut = Conv2DTranspose(4*n, (2, 2), strides=(2, 2), padding='same') (c7)
     # X_shortcut = BatchNormalization()(X_shortcut)
     u8 = concatenate([X_shortcut, c1])
-
     # u8 = Conv2D(4*n, (1, 1), padding='same', kernel_initializer='he_normal')(u8
 
     c8 = BatchNormalization()(u8)
