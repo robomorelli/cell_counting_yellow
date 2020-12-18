@@ -1,12 +1,12 @@
+import argparse
 import random
-import numpy as np
-import os
+import shutil
+
 import cv2
 import matplotlib.pyplot as plt
+import numpy as np
+
 from config import *
-import argparse
-import logging
-import shutil
 
 IMG_CHANNELS = 3
 
@@ -23,7 +23,7 @@ UpperLimit = tot_num - len(os.listdir(NewImages))
 ###########################TO DO ############################
 ###########################TO DO ############################
 ###########################TO DO ############################
-random.seed(99) # FIX the SEED#
+random.seed(a=NumberTest, version=2)  # FIX the SEED#
 # collect random number to select test set
 # until 58 names are completed
 ###########################TO DO ############################
@@ -31,7 +31,7 @@ random.seed(99) # FIX the SEED#
 ###########################TO DO ############################
 
 while len(test_names) < NumberTest:
-x = random.randint(0, UpperLimit)
+    x = random.randint(0, UpperLimit)
     if x not in test_names:
         test_names.append(x)
     else:
@@ -53,6 +53,7 @@ images_name.sort()
 # restore the original name
 images_name = [str(x) + '.tiff' for x in images_name]
 
+
 # %%
 
 # Split images it train_val and test folder
@@ -61,7 +62,6 @@ images_name = [str(x) + '.tiff' for x in images_name]
 # GIMP and imageJ software (interpolation???). We need to reset only 0 and 255 value
 # We did in the #############Processing############### section below
 def main():
-
     for ix, im_name in enumerate(images_name):
         #############Processing###############
         print(im_name)
@@ -80,7 +80,6 @@ def main():
         img_y = img_y.astype(np.uint8) * 255
 
         #############Saving in new folder###############
-
         if int(im_name.split('.')[0]) in test_names:
             print('test')
             img_dir = TestImages + '{}'.format(im_name)
@@ -94,10 +93,12 @@ def main():
             plt.imsave(fname=img_dir, arr=np.squeeze(img_x))
             plt.imsave(fname=mask_dir, arr=np.squeeze(img_y), cmap='gray')
 
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Define parameters for crop.')
-    parser.add_argument('--start_from_zero', nargs="?", default = False, help='remove existing file in the destination folder')
+    parser.add_argument('--start_from_zero', nargs="?", default=False,
+                        help='remove existing file in the destination folder')
     args = parser.parse_args()
 
     if args.start_from_zero:

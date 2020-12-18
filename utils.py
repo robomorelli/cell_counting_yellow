@@ -98,10 +98,12 @@ def make_cropper(image_ids, images_path , masks_path, SaveCropImages, SaveCropMa
 
         image, mask = read_image_masks(name, images_path,  masks_path)
 
-        if int(name.split('.')[0]) <= 252:
-            mask = erosion(np.squeeze(mask[:,:,0:1]), selem=np.ones([2,2]))
-        else:
-            mask = np.squeeze(mask[:,:,0:1])
+        # if int(name.split('.')[0]) <= 252:
+        #     mask = erosion(np.squeeze(mask[:,:,0:1]), selem=np.ones([2,2]))
+        # else:
+        #     mask = np.squeeze(mask[:,:,0:1])
+
+        mask = np.squeeze(mask[:, :, 0:1])
 
         CroppedImages, CroppedMasks = cropper(image, mask, NumCropped
                                              ,XCropSize, YCropSize
