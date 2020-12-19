@@ -54,7 +54,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Define parameters for crop.')
     parser.add_argument('--start_from_zero', action='store_const', const=True, default=False,
                         help='remove previous file in the destination folder')
-    parser.add_argument('--use_our_test_set', action='store_const', const=True, default=False,
+    parser.add_argument('--not_use_our_test_set', action='store_const', const=True, default=False,
                         help='use our test set instead of a random generated one')
     args = parser.parse_args()
 
@@ -63,7 +63,7 @@ if __name__ == "__main__":
     test_names = []
     UpperLimit = tot_num - len(os.listdir(NewImages))
 
-    if not args.use_our_test_set:
+    if args.not_use_our_test_set:
         random.seed(a=NumberTest, version=2)  # FIX the SEED#
 
         while len(test_names) < NumberTest:
@@ -80,6 +80,7 @@ if __name__ == "__main__":
         test_names = [148, 50, 52, 189, 164, 251, 242, 51, 10, 49, 115, 103, 90, 241, 73, 206, 224, 66, 247, 205,
                       157, 107, 72, 223, 26, 3, 125, 54, 120, 193, 18, 141, 168, 96, 94, 15, 25, 200, 170, 199,
                       34, 77, 8, 47, 222, 75, 79, 44, 156, 154, 185, 62, 194, 174, 233, 19, 40, 114]
+        print('test_names {}'.format(test_names))
 
     test_names.sort()
 
