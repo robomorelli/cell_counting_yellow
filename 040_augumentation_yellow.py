@@ -51,8 +51,13 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Define parameters for crop.')
     parser.add_argument('--start_from_zero',action='store_true', help='remove previous file in the destination folder')
-    parser.add_argument('--not_copy_images', action='store_false', default = True, help='copy cropped in crop_aug images')
-    parser.add_argument('--not_copy_masks', action='store_false', default = True, help='copy cropped in crop_aug mask')
+    # parser.add_argument('--not_copy_images', action='store_false', default = True, help='copy cropped in crop_aug images')
+    # parser.add_argument('--not_copy_masks', action='store_false', default = True, help='copy cropped in crop_aug mask')
+
+    parser.add_argument('--not_copy_images', action='store_const', const=True, default=False,
+                        help='copy cropped in crop_aug images')
+    parser.add_argument('--not_copy_masks', action='store_const', const=True, default=False,
+                        help='copy cropped in crop_aug masks')
 
     args = parser.parse_args()
 
@@ -76,14 +81,14 @@ if __name__ == "__main__":
 
     src_files = os.listdir(CropImages)
 
-    if args.not_copy_images:
+    if not args.not_copy_images:
         print('copying images')
         for file_name in src_files:
             full_file_name = os.path.join(CropImages, file_name)
             if os.path.isfile(full_file_name):
                 shutil.copy(full_file_name, AugCropImages)
 
-    if args.not_copy_masks:
+    if not args.not_copy_masks:
         print('copying masks')
         src_files = os.listdir(CropWeightedMasks)
         for file_name in src_files:
