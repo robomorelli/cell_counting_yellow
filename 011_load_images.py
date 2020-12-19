@@ -52,9 +52,9 @@ def main():
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Define parameters for crop.')
-    parser.add_argument('--start_from_zero', nargs='?', default=False,
-                        help='remove existing file in the destination folder')
-    parser.add_argument('--use_our_test_set', nargs='?', default=False,
+    parser.add_argument('--start_from_zero', action='store_const', const=True, default=False,
+                        help='remove previous file in the destination folder')
+    parser.add_argument('--use_our_test_set', action='store_const', const=True, default=False,
                         help='use our test set instead of a random generated one')
     args = parser.parse_args()
 
