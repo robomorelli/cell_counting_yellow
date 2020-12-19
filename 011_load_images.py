@@ -10,52 +10,6 @@ from config import *
 
 IMG_CHANNELS = 3
 
-# Read images from Original path (the folder given by Luppi)
-tot_num = len(os.listdir(AllImages))  # 252
-# 252-273
-
-# Fix number of test images 58: 2 additional images are insterted manually
-# because we need them in the test (see next jupyter cell)
-NumberTest = 58
-test_names = []
-UpperLimit = tot_num - len(os.listdir(NewImages))
-
-###########################TO DO ############################
-###########################TO DO ############################
-###########################TO DO ############################
-random.seed(a=NumberTest, version=2)  # FIX the SEED#
-# collect random number to select test set
-# until 58 names are completed
-###########################TO DO ############################
-###########################TO DO ############################
-###########################TO DO ############################
-
-while len(test_names) < NumberTest:
-    x = random.randint(0, UpperLimit)
-    if x not in test_names:
-        test_names.append(x)
-    else:
-        continue
-        
-
-test_names.append(254)  # maccheroni images needed in the test
-test_names.append(171)  # yellow strip artifact
-test_names.sort()
-
-# Our images name are 0.tiff, 1.tiff and so on
-# the format is .tiff and no more .TIF as the firts experiment run
-# I failed to save in .TIF format when reading from original dataset
-# If we want to fix this, we need to change 010_load_file_join_all_images
-images_name = os.listdir(AllImages)
-# select only the number
-images_name = [int(x.split('.')[0]) for x in images_name]
-# sort the images
-images_name.sort()
-# restore the original name
-images_name = [str(x) + '.tiff' for x in images_name]
-
-
-# %%
 
 # Split images it train_val and test folder
 # during the reading the images if the binary mask has more than two values:
@@ -98,9 +52,48 @@ def main():
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Define parameters for crop.')
-    parser.add_argument('--start_from_zero', nargs="?", default=False,
+    parser.add_argument('--start_from_zero', nargs='?', default=False,
                         help='remove existing file in the destination folder')
+    parser.add_argument('--use_our_test_set', nargs='?', default=False,
+                        help='use our test set instead of a random generated one')
     args = parser.parse_args()
+
+    tot_num = len(os.listdir(AllImages))
+    NumberTest = 58
+    test_names = []
+    UpperLimit = tot_num - len(os.listdir(NewImages))
+
+    if not args.use_our_test_set:
+        random.seed(a=NumberTest, version=2)  # FIX the SEED#
+
+        while len(test_names) < NumberTest:
+            x = random.randint(0, UpperLimit)
+            if x not in test_names:
+                test_names.append(x)
+            else:
+                continue
+
+        test_names.append(254)  # maccheroni images needed in the test
+        test_names.append(171)  # yellow strip artifact
+
+    else:
+        test_names = [148, 50, 52, 189, 164, 251, 242, 51, 10, 49, 115, 103, 90, 241, 73, 206, 224, 66, 247, 205,
+                      157, 107, 72, 223, 26, 3, 125, 54, 120, 193, 18, 141, 168, 96, 94, 15, 25, 200, 170, 199,
+                      34, 77, 8, 47, 222, 75, 79, 44, 156, 154, 185, 62, 194, 174, 233, 19, 40, 114]
+
+    test_names.sort()
+
+    # Our images name are 0.tiff, 1.tiff and so on
+    # the format is .tiff and no more .TIF as the firts experiment run
+    # I failed to save in .TIF format when reading from original dataset
+    # If we want to fix this, we need to change 010_load_file_join_all_images
+    images_name = os.listdir(AllImages)
+    # select only the number
+    images_name = [int(x.split('.')[0]) for x in images_name]
+    # sort the images
+    images_name.sort()
+    # restore the original name
+    images_name = [str(x) + '.tiff' for x in images_name]
 
     if args.start_from_zero:
         print('deleting existing files in destination folder')
