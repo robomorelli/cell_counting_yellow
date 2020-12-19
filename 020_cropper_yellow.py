@@ -13,7 +13,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Define parameters for crop.')
 
-    parser.add_argument('--start_from_zero', nargs="?", default=False,
+    parser.add_argument('--start_from_zero', action='store_const', const=True, default=False,
                         help='remove previous file in the destination folder')
 
     parser.add_argument('--images_path', nargs="?", default=TrainValImages,
@@ -36,11 +36,18 @@ if __name__ == "__main__":
 
     if args.start_from_zero:
         print('deleting existing files in destination folder')
-        shutil.rmtree(CropImages)
+        try:
+            shutil.rmtree(CropImages)
+        except:
+            pass
         os.makedirs(CropImages)
 
-        shutil.rmtree(CropMasks)
+        try:
+            shutil.rmtree(CropMasks)
+        except:
+            pass
         os.makedirs(CropMasks)
+
         print('start to crop')
 
     make_cropper(image_ids=image_ids, images_path=args.images_path, masks_path=args.masks_path

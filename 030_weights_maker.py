@@ -43,10 +43,12 @@ if __name__ == "__main__":
     parser.add_argument('--CropMasks', nargs="?", default = CropMasks, help='path including mask to crop')
     parser.add_argument('--CropWeightedMasks', nargs="?", default = CropWeightedMasks, help='path where save weighted mask')
     parser.add_argument('--save_images_path', nargs="?", default = CropImages, help='save images path')
-    parser.add_argument('--normalize', nargs="?", type = bool, default = False,  help='find the maximum for normalization')
-    parser.add_argument('--start_from_zero', nargs="?", type = bool, default = False,  help='delete all file in destination folder')
-    parser.add_argument('--continue_after_normalization', nargs="?", type = bool, default = False,  help='find the maximum for normalization')
-    parser.add_argument('--resume_after_normalization', nargs="?", type = bool, default = False,  help='find the maximum for normalization')
+
+    parser.add_argument('--normalize', action='store_const', const=True, default=False, help='find the maximum for normalization')
+    parser.add_argument('--start_from_zero', action='store_const', const=True, default=False, help='delete all file in destination folder')
+    parser.add_argument('--continue_after_normalization', action='store_const', const=True, default=False,  help='find the maximum for normalization')
+    parser.add_argument('--resume_after_normalization', action='store_const', const=True, default=False, help='find the maximum for normalization')
+
     parser.add_argument('--maximum', nargs="?", type = int, default = 3.8177538,  help='Maximum value for normalization')
     parser.add_argument('--sigma', nargs="?", type = int, default = 25,  help='kernel for cumpling cell deacaying influence')
 
@@ -54,8 +56,12 @@ if __name__ == "__main__":
 
     if args.start_from_zero:
         print('deleting existing files in destination folder')
-        shutil.rmtree(CropWeightedMasks)
+        try:
+            shutil.rmtree(CropWeightedMasks)
+        except:
+            pass
         os.makedirs(CropWeightedMasks)
+
         print('start new weighting mask')
 
     if args.normalize:

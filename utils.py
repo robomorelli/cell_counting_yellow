@@ -8,8 +8,8 @@ label, erosion, dilation, local_maxima, skeletonize, binary_erosion, remove_smal
 from scipy import ndimage
 import tqdm
 import pickle
-
-from config import *
+#
+# from config import *
 
 def read_masks(path, image_id):
 
@@ -67,8 +67,8 @@ def cropper(image, mask, NumCropped, XCropSize, YCropSize , XCropCoord, YCropCoo
     return CroppedImgs, CroppedMasks
 
 def make_cropper(image_ids, images_path , masks_path, SaveCropImages, SaveCropMasks,
-                 XCropSize=512, YCropSize=512, XCropCoord=400, YCropCoord = 400
-                 , img_width = IMG_WIDTH, img_height = IMG_HEIGHT,
+                 XCropSize, YCropSize, XCropCoord, YCropCoord
+                 , img_width , img_height ,
                   shift = 0):
     ix = shift
     flag_new_images = False

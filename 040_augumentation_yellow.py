@@ -45,39 +45,51 @@ if __name__ == "__main__":
 
     with open('id_new_images.pickle', 'rb') as handle:
         dic = pickle.load(handle)
-    id_new_image = dic['id_new_images']
+    id_new_images = dic['id_new_images']
 
-    print(id_new_image)
+    print(id_new_images)
 
     parser = argparse.ArgumentParser(description='Define parameters for crop.')
-    parser.add_argument('--start_from_zero', nargs="?", default = False, help='remove previous file in the destination folder')
+    parser.add_argument('--start_from_zero',action='store_true', help='remove previous file in the destination folder')
+    parser.add_argument('--not_copy_images', action='store_false', default = True, help='copy cropped in crop_aug images')
+    parser.add_argument('--not_copy_masks', action='store_false', default = True, help='copy cropped in crop_aug mask')
 
     args = parser.parse_args()
 
     if args.start_from_zero:
         print('deleting existing files in destination folder')
-        shutil.rmtree(AugCropImages)
+        try:
+            shutil.rmtree(AugCropImages)
+        except:
+            pass
+
         os.makedirs(AugCropImages)
 
-        shutil.rmtree(AugCropMasks)
+        try:
+            shutil.rmtree(AugCropMasks)
+        except:
+            pass
+
         os.makedirs(AugCropMasks)
+
         print('starting augmentation')
 
     src_files = os.listdir(CropImages)
 
-    print('copying images')
-    for file_name in src_files:
-        full_file_name = os.path.join(CropImages, file_name)
-        if os.path.isfile(full_file_name):
-            shutil.copy(full_file_name, AugCropImages)
+    if args.not_copy_images:
+        print('copying images')
+        for file_name in src_files:
+            full_file_name = os.path.join(CropImages, file_name)
+            if os.path.isfile(full_file_name):
+                shutil.copy(full_file_name, AugCropImages)
 
-    print('copying masks')
-    src_files = os.listdir(CropWeightedMasks)
-    for file_name in src_files:
-        full_file_name = os.path.join(CropWeightedMasks, file_name)
-        if os.path.isfile(full_file_name):
-            shutil.copy(full_file_name, AugCropMasks)
-
+    if args.not_copy_masks:
+        print('copying masks')
+        src_files = os.listdir(CropWeightedMasks)
+        for file_name in src_files:
+            full_file_name = os.path.join(CropWeightedMasks, file_name)
+            if os.path.isfile(full_file_name):
+                shutil.copy(full_file_name, AugCropMasks)
 
     make_data_augmentation(image_ids, CropImages,  CropWeightedMasks, split_num, id_new_images,
                            split_num_new_images, id_edges, AugCropImages, AugCropMasks,  ix = shift)
