@@ -22,13 +22,14 @@ from keras import callbacks
 from keras import optimizers
 import random
 import argparse
+import pathlib
 
 # from importlib import import_module
 # plots = import_module('051_plotscalars')
 # tb = import_module('050_tensorboard')
 # lrate = import_module('043_learning_rate')
 
-from config_script import *
+from config import *
 
 # tot_img_after_aug = count_files_in_directory(0, dir_list = ALL_IMAGES)
 #
@@ -138,7 +139,7 @@ def imageGenerator(color_mode = 'rgb'):
 
 
 def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
-             n , model_name):
+             n , model_name, compiler):
 
     inputs = Input((None, None, 3))
 
@@ -262,12 +263,12 @@ def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
     model.summary()
 
     if weights == 'wbce':
-        WeightedLoss = create_weighted_binary_crossentropy(1, 1.5)
+        WeightedLoss = create_weighted_binary_crossentropy(class_0_w, class_1_w)
 
     elif weights == 'map_weights':
-        WeightedLoss = create_weighted_binary_crossentropy_overcrowding(1, 1.5)
+        WeightedLoss = create_weighted_binary_crossentropy_overcrowding(class_0_w, class_1_w)
 
-    elif compiler == 'Adam':
+    if compiler == 'Adam':
         Adam = optimizers.Adam(lr=0.001)
         model.compile(optimizer=Adam, loss=WeightedLoss, metrics=[mean_iou, dice_coef])
     elif compiler == 'SGD':
@@ -278,11 +279,10 @@ def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
     checkpointer = ModelCheckpoint(str(MODEL_CHECKPOINTS/model_name), verbose=1, save_best_only=True)
     earlystopping = EarlyStopping(monitor='val_loss', patience=30)
 
-
     ReduceLR = ReduceLROnPlateau(monitor='val_loss', factor=0.7, patience=5, verbose=1,
                              mode='auto', cooldown=0, min_lr=9e-8)
 
-    callbacks = [checkpointer, earlystopping, tensorboard, ReduceLR]
+    callbacks = [checkpointer, earlystopping, ReduceLR]
 
     results = model.fit_generator(train_generator,
                                   steps_per_epoch=train_number/BATCH_SIZE,
@@ -296,16 +296,18 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='weighting masks')
 
     parser.add_argument('--images', nargs="?", default = AugCropImages, help='path including images for training')
-    parser.add_argument('--target', nargs="?", default = AugCropMasks, help='path including masks for training')
+    parser.add_argument('--masks', nargs="?", default = AugCropMasks, help='path including masks for training')
+    parser.add_argument('--model_name',type=str, default = 'ResUnet',  help='model name')
+    parser.add_argument('--model_results', nargs="?", default = ModelResults, help='path where to save the models')
+    parser.add_argument('--compiler', nargs="?",type = str, default = 'Adam', help='Adam or SGD')
 
     parser.add_argument('--batch_size', nargs="?", type = int, default = 4,  help='batch size')
     parser.add_argument('--val_split', nargs="?", type = float, default = 0.3,  help='val_split')
     parser.add_argument('--x_crop_size', nargs="?", type = int, default = 512,  help='x_crop_size')
     parser.add_argument('--y_crop_size', nargs="?", type = int, default = 512,  help='y_crop_size')
     parser.add_argument('--img_channels', nargs="?", type = int, default = 3,  help='image channels')
-    parser.add_argument('--model', nargs="?", type = string, default = 'resunet',  help='model type')
-    parser.add_argument('--model_name', nargs="?", default = None,  help='model name')
-    parser.add_argument('--weights', nargs="?", default = None,  help='wbce for weighted bce or map_weights for overcrowding map')
+
+    parser.add_argument('--weights', nargs="?", type = str, default = 'map_weights',  help='wbce for weighted bce or map_weights for overcrowding map')
     parser.add_argument('--class_weights', nargs="?", type = list, default = [1, 1.5],  help='class 0 and class 1 weights')
     parser.add_argument('--n', nargs="?", type = list, default = 4,  help='number of layer multiplier factor, starting from n0 = 4')
 
@@ -325,16 +327,18 @@ if __name__ == "__main__":
     IMG_HEIGHT = args.y_crop_size
     IMG_CHANNELS = args.img_channels
 
+    ALL_IMAGES = pathlib.Path(args.images)
+    ALL_MASKS = pathlib.Path(args.masks)
+    MODEL_CHECKPOINTS = pathlib.Path(args.model_results)
+
     if IMG_CHANNELS == 3:
         color_mode = 'rgb'
     elif IMG_CHANNELS == 1:
         color_mode = 'grayscale'
 
-    if args.model_name == None:
-        model_name = model
-
     #batch size, img size # model, #n, #map_weight,#name model# color_mode
     train_generator, valid_generator = imageGenerator(color_mode='rgb')
 
-    ResUnet(train_generator,valid_generator, map_weights = args.weights,class_0_w = args.class_weights[0]
-            , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n)
+
+    ResUnet(train_generator,valid_generator, weights = args.weights, class_0_w = args.class_weights[0]
+            , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n, compiler = args.compiler)

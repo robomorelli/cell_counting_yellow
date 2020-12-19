@@ -75,3 +75,8 @@ if not os.path.exists(AugCropImages):
 
 if not os.path.exists(AugCropMasks):
     os.makedirs(AugCropMasks)
+
+ModelResults = 'model_results/'
+
+if not os.path.exists(ModelResults):
+    os.makedirs(ModelResults)
