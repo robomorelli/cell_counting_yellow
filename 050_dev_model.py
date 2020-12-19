@@ -318,7 +318,7 @@ if __name__ == "__main__":
     VALID_BATCH_SIZE = args.batch_size
     # seed1=1
     seed1 = 333
-    random.seed(seed1)
+    # random.seed(seed1)
     val_percentage = args.val_split
     valid_number = int(tot_img_after_aug*val_percentage)
     train_number = tot_img_after_aug - valid_number
