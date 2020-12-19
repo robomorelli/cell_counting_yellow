@@ -236,8 +236,6 @@ def make_data_augmentation(image_ids, images_path,  masks_path, split_num, id_st
     # for ax_index, image_id in tqdm(enumerate(image_ids),total=len(image_ids)):
     tot = len(image_ids)
     for ax_index, image_id in enumerate(image_ids):
-        print('image {} on {}'.format(ax_index, tot))
-
         ID = int(image_id.split('.')[0])
 
         image, mask = read_image_masks(image_id, images_path,  masks_path)
@@ -246,9 +244,12 @@ def make_data_augmentation(image_ids, images_path,  masks_path, split_num, id_st
         maximum = mask[:,:,1:2].max()
         labels_tar, nlabels_tar = ndimage.label(np.squeeze(mask[:,:,0:1]))
 
-
         if ID > id_start_new_images:
             split_num = split_num_new_images
+        else:
+            split_num = split_num
+
+        print('image {} on {} params: {}-{}'.format(ax_index, tot, ID, split_num))
 
         if ID in id_edges:
             print(ID, ix)
