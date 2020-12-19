@@ -90,7 +90,7 @@ def make_cropper(image_ids, images_path , masks_path, SaveCropImages, SaveCropMa
         if (int(name.split('.')[0]) >= 252) & (not(flag_new_images)):
             print('start cropping on new images at ids {}'.format(ix))
             dic = {}
-            dic['id_new_images'] = int(name.split('.')[0])
+            dic['id_new_images'] = ix
             with open('id_new_images.pickle', 'wb') as handle:
                  pickle.dump(dic, handle, protocol=pickle.HIGHEST_PROTOCOL)
 

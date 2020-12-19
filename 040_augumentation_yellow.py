@@ -39,7 +39,7 @@ image_ids = os.listdir(CropImages)
 split_num = 5
 split_num_new_images = 11
 shift = len(image_ids)
-id_edges = [804, 993, 1152, 1569, 2325, 2330, 2328, 2327]
+id_edges = [492, 969, 1116, 2001, 2322, 2325, 2326, 2327, 2328, 2330, 2333, 2336]
 
 if __name__ == "__main__":
 
@@ -64,10 +64,13 @@ if __name__ == "__main__":
         print('starting augmentation')
 
     src_files = os.listdir(CropImages)
+    
+    print('copying images')
     for file_name in src_files:
         full_file_name = os.path.join(CropImages, file_name)
         if os.path.isfile(full_file_name):
             shutil.copy(full_file_name, AugCropImages)
+
 
     src_files = os.listdir(CropWeightedMasks)
     for file_name in src_files:
