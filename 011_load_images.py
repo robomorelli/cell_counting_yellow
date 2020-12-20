@@ -81,8 +81,8 @@ if __name__ == "__main__":
                       157, 107, 72, 223, 26, 3, 125, 54, 120, 193, 18, 141, 168, 96, 94, 15, 25, 200, 170, 199,
                       34, 77, 8, 47, 222, 75, 79, 44, 156, 154, 185, 62, 194, 174, 233, 19, 40, 114]
 
-        test.append(254)
-        test.append(171)
+        test_names.append(254)
+        test_names.append(171)
         print('test_names {}'.format(test_names))
 
     test_names.sort()
