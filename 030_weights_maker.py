@@ -55,7 +55,7 @@ if __name__ == "__main__":
             shutil.rmtree(CropWeightedMasks)
         except:
             pass
-        os.makedirs(CropWeightedMasks)
+        os.makedirs(CropWeightedMasks, exist_ok=True)
 
         print('start new weighting mask')
 

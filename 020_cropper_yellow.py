@@ -40,13 +40,13 @@ if __name__ == "__main__":
             shutil.rmtree(CropImages)
         except:
             pass
-        os.makedirs(CropImages)
+        os.makedirs(CropImages,exist_ok=True)
 
         try:
             shutil.rmtree(CropMasks)
         except:
             pass
-        os.makedirs(CropMasks)
+        os.makedirs(CropMasks,exist_ok=True)
 
         print('start to crop')
 

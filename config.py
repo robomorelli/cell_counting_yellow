@@ -85,11 +85,20 @@ if not os.path.exists(CropWeightedMasks):
 AugCropImages = root + 'DATASET/train_val/crop_augmented/images/'
 AugCropMasks = root + 'DATASET/train_val/crop_augmented/masks/'
 
+AugCropImages_basic = root + 'DATASET/train_val/crop_augmented_basic/images/'
+AugCropMasks_basic = root + 'DATASET/train_val/crop_augmented_basic/masks/'
+
 if not os.path.exists(AugCropImages):
     os.makedirs(AugCropImages)
 
 if not os.path.exists(AugCropMasks):
     os.makedirs(AugCropMasks)
+
+if not os.path.exists(AugCropImages_basic):
+    os.makedirs(AugCropImages_basic)
+
+if not os.path.exists(AugCropMasks_basic):
+    os.makedirs(AugCropMasks_basic)
 
 ModelResults = root + 'model_results/'
 

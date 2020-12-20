@@ -102,14 +102,14 @@ if __name__ == "__main__":
     if args.start_from_zero:
         print('deleting existing files in destination folder')
         shutil.rmtree(TrainValImages)
-        os.makedirs(TrainValImages)
+        os.makedirs(TrainValImages,exist_ok=True)
         shutil.rmtree(TrainValMasks)
-        os.makedirs(TrainValMasks)
+        os.makedirs(TrainValMasks,exist_ok=True)
 
         shutil.rmtree(TestImages)
-        os.makedirs(TestImages)
+        os.makedirs(TestImages,exist_ok=True)
         shutil.rmtree(TestMasks)
-        os.makedirs(TestMasks)
+        os.makedirs(TestMasks,exist_ok=True)
         print('Splitting image in train_val and test')
 
     main()

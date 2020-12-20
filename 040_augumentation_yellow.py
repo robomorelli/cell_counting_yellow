@@ -36,10 +36,8 @@ from config import *
 from utils import *
 
 image_ids = os.listdir(CropImages)
-split_num = 5
-split_num_new_images = 11
 shift = len(image_ids)
-id_edges = [492, 969, 1116, 2001, 2322, 2325, 2326, 2327, 2328, 2330, 2333, 2336]
+id_edges = [492, 969, 1116, 2001, 2322, 2325, 2326, 2327, 2328, 2330, 2333, 2336] #These numbers are valid if use our test
 
 if __name__ == "__main__":
 
@@ -51,13 +49,19 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Define parameters for crop.')
     parser.add_argument('--start_from_zero',action='store_true', help='remove previous file in the destination folder')
-    # parser.add_argument('--not_copy_images', action='store_false', default = True, help='copy cropped in crop_aug images')
-    # parser.add_argument('--not_copy_masks', action='store_false', default = True, help='copy cropped in crop_aug mask')
+
+    parser.add_argument('--split_num', nargs="?", type=int, default=5, help='width of the crop')
+    parser.add_argument('--split_num_new_images', nargs="?", type=int, default=11, help='height of the crop')
 
     parser.add_argument('--not_copy_images', action='store_const', const=True, default=False,
                         help='copy cropped in crop_aug images')
     parser.add_argument('--not_copy_masks', action='store_const', const=True, default=False,
                         help='copy cropped in crop_aug masks')
+
+    parser.add_argument('--unique_split', type=int, default=0,
+                        help='default is 0, define a different number and wil be the unique split for all the images')
+    parser.add_argument('--no_artifact_aug', action='store_const', const=True, default=False,
+                        help='run basic augmentation')
 
     args = parser.parse_args()
 
@@ -67,15 +71,13 @@ if __name__ == "__main__":
             shutil.rmtree(AugCropImages)
         except:
             pass
-
-        os.makedirs(AugCropImages)
+        os.makedirs(AugCropImages,exist_ok=True)
 
         try:
             shutil.rmtree(AugCropMasks)
         except:
             pass
-
-        os.makedirs(AugCropMasks)
+        os.makedirs(AugCropMasks,exist_ok=True)
 
         print('starting augmentation')
 
