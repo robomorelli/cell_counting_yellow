@@ -3,3 +3,4 @@
 *.hdf5
 *.pdf
 DATASET/*
+__pycache__/
