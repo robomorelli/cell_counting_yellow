@@ -29,6 +29,7 @@ from albumentations import (RandomCrop,CenterCrop,ElasticTransform,RGBShift,Rota
 )
 
 from utils import *
+from config import *
 
 IMG_WIDTH = 1600
 IMG_HEIGTH = 1200
@@ -231,7 +232,11 @@ def data_aug(image ,mask, image_id, nlabels_tar, minimum, maximum):
 
 
 def make_data_augmentation(image_ids, images_path,  masks_path, split_num, id_start_new_images,
-                           split_num_new_images, id_edges, SaveAugImages, SaveAugMasks, ix):
+                           split_num_new_images, id_edges, SaveAugImages, SaveAugMasks, ix,  unique_split, no_artifact_aug):
+
+    if (no_artifact_aug) | (unique_split):
+        SaveAugImages = AugCropImagesBasic
+        SaveAugMasks = AugCropMasksBasic
 
     # for ax_index, image_id in tqdm(enumerate(image_ids),total=len(image_ids)):
     tot = len(image_ids)
@@ -244,14 +249,17 @@ def make_data_augmentation(image_ids, images_path,  masks_path, split_num, id_st
         maximum = mask[:,:,1:2].max()
         labels_tar, nlabels_tar = ndimage.label(np.squeeze(mask[:,:,0:1]))
 
-        if ID > id_start_new_images:
-            split_num = split_num_new_images
+        if unique_split == 0:
+            if ID > id_start_new_images:
+                split_num = split_num_new_images
+            else:
+                split_num = split_num
         else:
-            split_num = split_num
+            split_num = unique_split
 
         print('image {} on {} params: {}-{}'.format(ax_index, tot, ID, split_num))
 
-        if ID in id_edges:
+        if (ID in id_edges) & (not(no_artifact_aug)):
             print(ID, ix)
             for i in range(80):
 
