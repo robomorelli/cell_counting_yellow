@@ -251,13 +251,13 @@ def make_data_augmentation(image_ids, images_path,  masks_path, split_num, id_st
 
         if unique_split == 0:
             if ID > id_start_new_images:
-                split_num = split_num_new_images
+                split_num_im = split_num_new_images
             else:
-                split_num = split_num
+                split_num_im = split_num
         else:
             split_num = unique_split
 
-        print('image {} on {} params: {}-{}'.format(ax_index, tot, ID, split_num))
+        print('image {} on {} params: {}-{}'.format(ax_index, tot, ID, split_num_im))
 
         if (ID in id_edges) & (not(no_artifact_aug)):
             print(ID, ix)
@@ -325,7 +325,7 @@ def make_data_augmentation(image_ids, images_path,  masks_path, split_num, id_st
 
         else:
 
-            for i in range(split_num):
+            for i in range(split_num_im):
 
                 new_image, new_mask = data_aug(image, mask, image_id, nlabels_tar,minimum, maximum)
 

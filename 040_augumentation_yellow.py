@@ -53,8 +53,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Define augmentation setting....default running follow paper requirements')
     parser.add_argument('--start_from_zero',action='store_true', help='remove previous file in the destination folder')
 
-    parser.add_argument('--split_num', nargs="?", type=int, default=5, help='width of the crop')
-    parser.add_argument('--split_num_new_images', nargs="?", type=int, default=11, help='height of the crop')
+    parser.add_argument('--split_num', nargs="?", type=int, default=4, help='width of the crop')
+    parser.add_argument('--split_num_new_images', nargs="?", type=int, default=10, help='height of the crop')
 
     parser.add_argument('--no_copy_images', action='store_const', const=True, default=False,
                         help='copy cropped in crop_aug images')
