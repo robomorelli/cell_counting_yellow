@@ -93,8 +93,6 @@ if __name__ == "__main__":
                 pass
             os.makedirs(AugCropMasks,exist_ok=True)
 
-        print('starting augmentation')
-
     src_files = os.listdir(CropImages)
 
     if not args.no_copy_images:
