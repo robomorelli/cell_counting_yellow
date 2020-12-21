@@ -352,6 +352,8 @@ if __name__ == "__main__":
     else:
         cluster=False
 
+    # cluster = True
+
     if args.images == 'AugCropImagesBasic':
         if not cluster:
             images_path = AugCropImagesBasic
@@ -359,6 +361,9 @@ if __name__ == "__main__":
         else:
             images_path = AugCropImagesBasicSplitted
             masks_path = AugCropMasksBasicSplitted
+
+        tot_img_after_aug = len(os.listdir(AugCropImagesBasic))
+
     else:
         if not cluster:
             images_path = AugCropImages
@@ -367,7 +372,9 @@ if __name__ == "__main__":
             images_path = AugCropImagesSplitted
             masks_path = AugCropMasksSplitted
 
-    tot_img_after_aug = len(os.listdir(images_path))
+            tot_img_after_aug = len(os.listdir(AugCropImages))
+
+    # tot_img_after_aug = len(os.listdir(images_path))
     BATCH_SIZE = args.batch_size
     VALID_BATCH_SIZE = args.batch_size
     # seed1=1
