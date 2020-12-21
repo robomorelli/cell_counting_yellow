@@ -37,12 +37,12 @@ def split_images_in_folder(folder, fol_type):
         n_folder = len(images) // file_per_folder
 
     for i in range(n_folder):
-        path = str(folder.parent) + '_splitted/{}/{}{}'.format(fol_type, fol_type, str(i))
+        path = str(folder.parent) + '_splitted_{}/{}/{}{}'.format(fol_type, fol_type, fol_type, str(i))
         os.makedirs(path , exist_ok=True)
 
     for i, name in tqdm(enumerate(images)):
         fol = i // file_per_folder
-        path = str(folder.parent) + '_splitted/{}/{}{}'.format(fol_type, fol_type, str(fol))
+        path = str(folder.parent) + '_splitted_{}/{}/{}{}'.format(fol_type, fol_type, fol_type, str(fol))
         dest_name = path + '/' + name
         copy(str(folder / name), str(dest_name))
 
