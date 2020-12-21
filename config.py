@@ -85,14 +85,14 @@ if not os.path.exists(CropWeightedMasks):
 AugCropImages = root + 'DATASET/train_val/crop_augmented/images/'
 AugCropMasks = root + 'DATASET/train_val/crop_augmented/masks/'
 
-AugCropImagesSplitted = root + 'DATASET/train_val/crop_augmented_splitted/images/'
-AugCropMasksSplitted = root + 'DATASET/train_val/crop_augmented_splitted/masks/'
+AugCropImagesSplitted = root + 'DATASET/train_val/crop_augmented_splitted_images/images/'
+AugCropMasksSplitted = root + 'DATASET/train_val/crop_augmented_splitted_masks/masks/'
 
 AugCropImagesBasic = root + 'DATASET/train_val/crop_augmented_basic/images/'
 AugCropMasksBasic = root + 'DATASET/train_val/crop_augmented_basic/masks/'
 
-AugCropImagesBasicSplitted = root + 'DATASET/train_val/crop_augmented_basic_splitted/images/'
-AugCropMasksBasicSplitted = root + 'DATASET/train_val/crop_augmented_basic_splitted/masks/'
+AugCropImagesBasicSplitted = root + 'DATASET/train_val/crop_augmented_basic_splitted_images/images/'
+AugCropMasksBasicSplitted = root + 'DATASET/train_val/crop_augmented_basic_splitted_masks/masks/'
 
 if not os.path.exists(AugCropImages):
     os.makedirs(AugCropImages)
