@@ -268,6 +268,8 @@ def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
     elif weights == 'map_weights':
         WeightedLoss = create_weighted_binary_crossentropy_overcrowding(class_0_w, class_1_w)
 
+    if gpus>1:
+        model = multi_gpu_model(model, gpus=gpus)
 
     with tf.device("/cpu:0"):
 		# initialize the model
@@ -280,10 +282,6 @@ def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
             SGD = optimizers.SGD(lr=0.003, momentum = 0.9)
             model.compile(optimizer=SGD, loss=WeightedLoss, metrics=[mean_iou, dice_coef])
 
-    if multi_gpu:
-        model = multi_gpu_model(model, gpus=G)
-
-
     checkpointer = ModelCheckpoint(str(MODEL_CHECKPOINTS/model_name), verbose=1, save_best_only=True)
     earlystopping = EarlyStopping(monitor='val_loss', patience=30)
 
@@ -292,12 +290,25 @@ def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
 
     callbacks = [checkpointer, earlystopping, ReduceLR]
 
-    results = model.fit_generator(train_generator,
-                                  steps_per_epoch=train_number/BATCH_SIZE,
-                                  validation_data=valid_generator,
-                                  validation_steps=valid_number/VALID_BATCH_SIZE,
-                                  callbacks=callbacks,
-                                  epochs=200)
+    if gpus>1:
+
+        results = model.fit_generator(train_generator,
+                                      steps_per_epoch=train_number/BATCH_SIZE,
+                                      validation_data=valid_generator,
+                                      validation_steps=valid_number/VALID_BATCH_SIZE,
+                                      callbacks=callbacks,
+                                      epochs=200,
+                                      use_multiprocessing=True,
+                                      workers=8
+                                      )
+    else:
+
+        results = model.fit_generator(train_generator,
+                                      steps_per_epoch=train_number/BATCH_SIZE,
+                                      validation_data=valid_generator,
+                                      validation_steps=valid_number/VALID_BATCH_SIZE,
+                                      callbacks=callbacks,
+                                      epochs=200)
 
 if __name__ == "__main__":
 
