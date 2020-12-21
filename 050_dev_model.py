@@ -116,6 +116,8 @@ def rgb2hsv(image):
 
 def imageGenerator(color_mode = 'rgb'):
 
+    print('path for image generatore {}'.format(ALL_IMAGES))
+
     image_datagen = ImageDataGenerator(rescale=1./255,validation_split = val_percentage)
                                        #preprocessing_function=rgb2hsv)
     mask_datagen = ImageDataGenerator(rescale=1./255, validation_split = val_percentage, dtype=bool)
@@ -336,7 +338,36 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    tot_img_after_aug = len(os.listdir(AugCropImages))
+    try:
+        o = subprocess.run(["hostname"],  capture_output=True)
+        o = o.stdout
+        o = o.strip().decode('utf-8')
+    except:
+        o = subprocess.run(["hostname"],  stdout=PIPE, stderr=PIPE)
+        o = o.stdout
+        o = o.strip().decode('utf-8')
+
+    if 'cnaf' in o:
+        cluster=True
+    else:
+        cluster=False
+
+    if args.images == 'AugCropImagesBasic':
+        if not cluster:
+            images_path = AugCropImagesBasic
+            masks_path = AugCropMasksBasic
+        else:
+            images_path = AugCropImagesBasicSplitted
+            masks_path = AugCropMasksBasicSplitted
+    else:
+        if not cluster:
+            images_path = AugCropImages
+            masks_path = AugCropMasks
+        else:
+            images_path = AugCropImagesSplitted
+            masks_path = AugCropMasksSplitted
+
+    tot_img_after_aug = len(os.listdir(images_path))
     BATCH_SIZE = args.batch_size
     VALID_BATCH_SIZE = args.batch_size
     # seed1=1
@@ -350,23 +381,9 @@ if __name__ == "__main__":
     IMG_HEIGHT = args.y_crop_size
     IMG_CHANNELS = args.img_channels
 
-    ALL_IMAGES = pathlib.Path(args.images)
-    ALL_MASKS = pathlib.Path(args.masks)
+    ALL_IMAGES = pathlib.Path(images_path)
+    ALL_MASKS = pathlib.Path(masks_path)
     MODEL_CHECKPOINTS = pathlib.Path(args.model_results)
-
-    try:
-        o = subprocess.run(["hostname"],  capture_output=True)
-        o = o.stdout
-        o = o.strip().decode('utf-8')
-    except:
-        o = subprocess.run(["hostname"],  stdout=PIPE, stderr=PIPE)
-        o = o.stdout
-        o = o.strip().decode('utf-8')
-
-    if 'cnaf' in o:
-        cluster=True
-    else:
-        cluster=True
 
     if IMG_CHANNELS == 3:
         color_mode = 'rgb'
