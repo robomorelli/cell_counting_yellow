@@ -24,6 +24,8 @@ import random
 import argparse
 import pathlib
 from tensorflow.keras.utils import multi_gpu_model
+import subprocess
+from subprocess import PIPE
 
 # from importlib import import_module
 # plots = import_module('051_plotscalars')
@@ -140,7 +142,7 @@ def imageGenerator(color_mode = 'rgb'):
 
 
 def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
-             n , model_name, compiler, gpus):
+             n , model_name, compiler, gpus, cluster):
 
     inputs = Input((None, None, 3))
 
@@ -272,16 +274,16 @@ def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
     if gpus>1:
         model = multi_gpu_model(model, gpus=gpus)
 
-    with tf.device("/cpu:0"):
+    # with tf.device("/cpu:0"):
 		# initialize the model
 		# model = MiniGoogLeNet.build(width=32, height=32, depth=3,
 		# 	classes=10)
-        if compiler == 'Adam':
-            Adam = optimizers.Adam(lr=0.001)
-            model.compile(optimizer=Adam, loss=WeightedLoss, metrics=[mean_iou, dice_coef])
-        elif compiler == 'SGD':
-            SGD = optimizers.SGD(lr=0.003, momentum = 0.9)
-            model.compile(optimizer=SGD, loss=WeightedLoss, metrics=[mean_iou, dice_coef])
+    if compiler == 'Adam':
+        Adam = optimizers.Adam(lr=0.001)
+        model.compile(optimizer=Adam, loss=WeightedLoss, metrics=[mean_iou, dice_coef])
+    elif compiler == 'SGD':
+        SGD = optimizers.SGD(lr=0.003, momentum = 0.9)
+        model.compile(optimizer=SGD, loss=WeightedLoss, metrics=[mean_iou, dice_coef])
 
     checkpointer = ModelCheckpoint(str(MODEL_CHECKPOINTS/model_name), verbose=1, save_best_only=True)
     earlystopping = EarlyStopping(monitor='val_loss', patience=30)
@@ -291,7 +293,7 @@ def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
 
     callbacks = [checkpointer, earlystopping, ReduceLR]
 
-    if gpus>1:
+    if cluster:
 
         results = model.fit_generator(train_generator,
                                       steps_per_epoch=train_number/BATCH_SIZE,
@@ -352,6 +354,20 @@ if __name__ == "__main__":
     ALL_MASKS = pathlib.Path(args.masks)
     MODEL_CHECKPOINTS = pathlib.Path(args.model_results)
 
+    try:
+        o = subprocess.run(["hostname"],  capture_output=True)
+        o = o.stdout
+        o = o.strip().decode('utf-8')
+    except:
+        o = subprocess.run(["hostname"],  stdout=PIPE, stderr=PIPE)
+        o = o.stdout
+        o = o.strip().decode('utf-8')
+
+    if 'cnaf' in o:
+        cluster=True
+    else:
+        cluster=True
+
     if IMG_CHANNELS == 3:
         color_mode = 'rgb'
     elif IMG_CHANNELS == 1:
@@ -362,4 +378,5 @@ if __name__ == "__main__":
 
 
     ResUnet(train_generator,valid_generator, weights = args.weights, class_0_w = args.class_weights[0]
-            , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n, compiler = args.compiler, gpus = args.gpus)
+            , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n,
+            compiler = args.compiler, gpus = args.gpus, cluster=cluster)
