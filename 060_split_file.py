@@ -18,7 +18,8 @@ Created on Wed Jan  9 19:45:22 2019
 """
 
 from tqdm import tqdm
-from shutil import move
+from shutil import move, copy
+from pathlib import Path
 
 from config import *
 
@@ -35,14 +36,16 @@ def split_images_in_folder(folder, fol_type):
         n_folder = len(images) // file_per_folder
 
     for i in range(n_folder):
-        os.makedirs(str(folder.parent / fol_type) + str(i), exist_ok=True)
+        path = str(folder.parent) + '_splitted/{}/{}{}'.format(fol_type, fol_type, str(i))
+        os.makedirs(path , exist_ok=True)
 
     for i, name in tqdm(enumerate(images)):
         fol = i // file_per_folder
-        dest_name = fol_type + str(fol) + '/' + name
-        move(str(folder / name), str(folder.parent / dest_name))
+        path = str(folder.parent) + '_splitted/{}/{}{}'.format(fol_type, fol_type, str(fol))
+        dest_name = path + '/' + name
+        copy(str(folder / name), str(dest_name))
 
 
 if __name__ == "__main__":
-    split_images_in_folder(AugCropImages, 'images')
-    split_images_in_folder(AugCropMasks, 'masks')
+    split_images_in_folder(Path(AugCropImages), 'images')
+    split_images_in_folder(Path(AugCropMasks), 'masks')
