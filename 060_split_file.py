@@ -20,6 +20,7 @@ Created on Wed Jan  9 19:45:22 2019
 from tqdm import tqdm
 from shutil import move, copy
 from pathlib import Path
+import argparse
 
 from config import *
 
@@ -47,5 +48,18 @@ def split_images_in_folder(folder, fol_type):
 
 
 if __name__ == "__main__":
-    split_images_in_folder(Path(AugCropImages), 'images')
-    split_images_in_folder(Path(AugCropMasks), 'masks')
+
+    parser = argparse.ArgumentParser(description='weighting masks')
+
+    parser.add_argument('--images', nargs="?", default = AugCropImages, help='path including images for training')
+
+    args = parser.parse_args()
+    if args.images == 'AugCropImagesBasic':
+        images_path = AugCropImagesBasic
+        masks_path = AugCropMasksBasic
+    else:
+        images_path = AugCropImages
+        masks_path = AugCropMasks
+
+    split_images_in_folder(Path(images_path), 'images')
+    split_images_in_folder(Path(masks_path), 'masks')

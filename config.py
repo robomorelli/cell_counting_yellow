@@ -91,6 +91,9 @@ AugCropMasksSplitted = root + 'DATASET/train_val/crop_augmented_splitted/masks/'
 AugCropImagesBasic = root + 'DATASET/train_val/crop_augmented_basic/images/'
 AugCropMasksBasic = root + 'DATASET/train_val/crop_augmented_basic/masks/'
 
+AugCropImagesSplitted = root + 'DATASET/train_val/crop_augmented_basic_splitted/images/'
+AugCropMasksSplitted = root + 'DATASET/train_val/crop_augmented_basic_splitted/masks/'
+
 if not os.path.exists(AugCropImages):
     os.makedirs(AugCropImages)
 
