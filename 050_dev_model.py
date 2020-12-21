@@ -139,7 +139,7 @@ def imageGenerator(color_mode = 'rgb'):
 
 
 def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
-             n , model_name, compiler):
+             n , model_name, compiler, gpus):
 
     inputs = Input((None, None, 3))
 
@@ -268,12 +268,20 @@ def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
     elif weights == 'map_weights':
         WeightedLoss = create_weighted_binary_crossentropy_overcrowding(class_0_w, class_1_w)
 
-    if compiler == 'Adam':
-        Adam = optimizers.Adam(lr=0.001)
-        model.compile(optimizer=Adam, loss=WeightedLoss, metrics=[mean_iou, dice_coef])
-    elif compiler == 'SGD':
-        SGD = optimizers.SGD(lr=0.003, momentum = 0.9)
-        model.compile(optimizer=SGD, loss=WeightedLoss, metrics=[mean_iou, dice_coef])
+
+    with tf.device("/cpu:0"):
+		# initialize the model
+		# model = MiniGoogLeNet.build(width=32, height=32, depth=3,
+		# 	classes=10)
+        if compiler == 'Adam':
+            Adam = optimizers.Adam(lr=0.001)
+            model.compile(optimizer=Adam, loss=WeightedLoss, metrics=[mean_iou, dice_coef])
+        elif compiler == 'SGD':
+            SGD = optimizers.SGD(lr=0.003, momentum = 0.9)
+            model.compile(optimizer=SGD, loss=WeightedLoss, metrics=[mean_iou, dice_coef])
+
+    if multi_gpu:
+        model = multi_gpu_model(model, gpus=G)
 
 
     checkpointer = ModelCheckpoint(str(MODEL_CHECKPOINTS/model_name), verbose=1, save_best_only=True)
@@ -300,6 +308,7 @@ if __name__ == "__main__":
     parser.add_argument('--model_name',type=str, default = 'ResUnet',  help='model name')
     parser.add_argument('--model_results', nargs="?", default = ModelResults, help='path where to save the models')
     parser.add_argument('--compiler', nargs="?",type = str, default = 'Adam', help='Adam or SGD')
+    parser.add_argument("--gpus", type=int, default=1, help="# of GPUs to use for training")
 
     parser.add_argument('--batch_size', nargs="?", type = int, default = 4,  help='batch size')
     parser.add_argument('--val_split', nargs="?", type = float, default = 0.3,  help='val_split')
@@ -341,4 +350,4 @@ if __name__ == "__main__":
 
 
     ResUnet(train_generator,valid_generator, weights = args.weights, class_0_w = args.class_weights[0]
-            , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n, compiler = args.compiler)
+            , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n, compiler = args.compiler, gpus = args.gpus)
