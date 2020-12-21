@@ -23,6 +23,7 @@ from keras import optimizers
 import random
 import argparse
 import pathlib
+from tensorflow.keras.utils import multi_gpu_model
 
 # from importlib import import_module
 # plots = import_module('051_plotscalars')
