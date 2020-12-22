@@ -3,15 +3,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 from skimage.morphology import remove_small_objects, erosion
 from tqdm import tqdm
-
+import logging
 from config import *
 
 IMG_CHANNELS = 3
 
 
 def main():
+    # logging.basicConfig(filename='example.log',level=logging.INFO)
     names = os.listdir(OriginalImages)
-
+    names.sort()
+    # logging.info(names)
     for ix, name in tqdm(enumerate(names), total=len(names)):
 
         img_x = cv2.imread(OriginalImages + name)
@@ -51,10 +53,12 @@ def main():
         plt.imsave(fname=mask_dir, arr=np.squeeze(img_y), cmap='gray')
 
     new_images = os.listdir(NewImages)
+    new_images.sort()
     new_masks = os.listdir(NewMasks)
+    new_masks.sort()
 
     idx = 0
-    shift = 252
+    shift = 252 #pay attention to set oslistdir:imagine to run again >>> it wil be 272 and not 252
     for im_name, mask_name in tqdm(zip(new_images, new_masks), total=len(new_images)):
 
         print(im_name)

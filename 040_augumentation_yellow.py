@@ -36,6 +36,7 @@ from config import *
 from utils import *
 
 image_ids = os.listdir(CropImages)
+image_ids.sort()
 shift = len(image_ids)
 id_edges = [492, 969, 1116, 2001, 2322, 2325, 2326, 2327, 2328, 2330, 2333, 2336] #These numbers are valid if use our test
 
@@ -94,7 +95,6 @@ if __name__ == "__main__":
             os.makedirs(AugCropMasks,exist_ok=True)
 
     src_files = os.listdir(CropImages)
-
     if not args.no_copy_images:
         print('copying images')
         for file_name in src_files:

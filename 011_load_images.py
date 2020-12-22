@@ -92,6 +92,7 @@ if __name__ == "__main__":
     # I failed to save in .TIF format when reading from original dataset
     # If we want to fix this, we need to change 010_load_file_join_all_images
     images_name = os.listdir(AllImages)
+    images_name.sort()
     # select only the number
     images_name = [int(x.split('.')[0]) for x in images_name]
     # sort the images

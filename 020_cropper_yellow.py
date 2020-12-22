@@ -5,6 +5,7 @@ from config import *
 from utils import *
 
 image_ids = os.listdir(TrainValImages)
+image_ids.sort()
 Number = [int(num.split('.')[0]) for num in image_ids]
 Number.sort()
 image_ids = [str(num) + '.tiff' for num in Number]

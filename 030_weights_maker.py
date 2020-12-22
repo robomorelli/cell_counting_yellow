@@ -27,6 +27,7 @@ from config import *
 from utils import *
 
 image_ids = os.listdir(CropMasks)
+image_ids.sort()
 ix = [int(x.split('.')[0]) for x in image_ids]
 ix.sort()
 image_ids = [str(x)+'.tiff' for x in ix]
