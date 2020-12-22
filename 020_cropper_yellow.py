@@ -4,12 +4,6 @@ import shutil
 from config import *
 from utils import *
 
-image_ids = os.listdir(TrainValImages)
-image_ids.sort()
-Number = [int(num.split('.')[0]) for num in image_ids]
-Number.sort()
-image_ids = [str(num) + '.tiff' for num in Number]
-
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Define parameters for crop.')
@@ -50,6 +44,12 @@ if __name__ == "__main__":
         os.makedirs(CropMasks,exist_ok=True)
 
         print('start to crop')
+
+    image_ids = os.listdir(args.images_path)
+    image_ids.sort()
+    Number = [int(num.split('.')[0]) for num in image_ids]
+    Number.sort()
+    image_ids = [str(num) + '.tiff' for num in Number]
 
     make_cropper(image_ids=image_ids, images_path=args.images_path, masks_path=args.masks_path
                  , SaveCropImages=args.save_images_path, SaveCropMasks=args.save_masks_path,

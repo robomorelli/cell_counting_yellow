@@ -74,7 +74,7 @@ if __name__ == "__main__":
                 continue
 
         test_names.append(254)  # maccheroni images needed in the test
-        test_names.append(171)  # yellow strip artifact
+        test_names.append(81)  # yellow strip artifact
 
     else:
         test_names = [148, 50, 52, 189, 164, 251, 242, 51, 10, 49, 115, 103, 90, 241, 73, 206, 224, 66, 247, 205,
@@ -82,7 +82,7 @@ if __name__ == "__main__":
                       34, 77, 8, 47, 222, 75, 79, 44, 156, 154, 185, 62, 194, 174, 233, 19, 40, 114]
 
         test_names.append(254)
-        test_names.append(171)
+        test_names.append(81)
         print('test_names {}'.format(test_names))
 
     test_names.sort()
