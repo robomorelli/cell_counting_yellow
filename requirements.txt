@@ -7,5 +7,5 @@ pathlib==1.0.1
 pyjet==1.6.0
 scikit-learn==0.19.1
 #tensorflow==1.11.0
-tensorflow-gpu==1.11.0
+tensorflow-gpu==1.14.0
 tqdm==4.54.1
