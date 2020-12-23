@@ -8,6 +8,8 @@ label, erosion, dilation, local_maxima, skeletonize, binary_erosion, remove_smal
 from scipy import ndimage
 import tqdm
 import pickle
+from keras import backend as K
+import tensorflow as tf
 #
 # from config import *
 
@@ -218,3 +220,62 @@ def make_weights(image_ids,  LoadMasksForWeight, SaveWeightMasks, sigma = 25
             pickle.dump(dic, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     return
+
+
+def mean_iou(y_true, y_pred):
+    prec = []
+    for t in np.arange(0.5, 1.0, 0.05):
+        y_pred_ = tf.to_int32(y_pred[:,:,:,0:1]> t)
+        score, up_opt = tf.metrics.mean_iou(y_true[:,:,:,0:1], y_pred_, 2)
+        K.get_session().run(tf.local_variables_initializer())
+        with tf.control_dependencies([up_opt]):
+            score = tf.identity(score)
+        prec.append(score)
+    return K.mean(K.stack(prec), axis=0)
+
+smooth = 1.
+
+def dice_coef(y_true, y_pred):
+    y_true_f = K.flatten(y_true[:,:,:,0:1])
+    y_pred_f = K.flatten(y_pred[:,:,:,0:1])
+    intersection = K.sum(y_true_f * y_pred_f)
+    return (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
+
+def dice_coef_loss(y_true, y_pred):
+    return -dice_coef(y_true, y_pred)
+
+def create_weighted_binary_crossentropy(zero_weight, one_weight):
+
+    def weighted_binary_crossentropy(y_true, y_pred):
+
+        # Original binary crossentropy (see losses.py):
+        # K.mean(K.binary_crossentropy(y_true, y_pred), axis=-1)
+
+        # Calculate the binary crossentropy
+        b_ce = K.binary_crossentropy(y_true[:,:,:,0:1], y_pred[:,:,:,0:1])
+
+        # Apply the weights
+        weight_vector = y_true[:,:,:,0:1]*one_weight + (1. - y_true[:,:,:,0:1])*zero_weight
+        weighted_b_ce = weight_vector * b_ce
+
+        # Return the mean error
+        return K.mean(weighted_b_ce)
+
+    return weighted_binary_crossentropy
+
+def create_weighted_binary_crossentropy_overcrowding(zero_weight, one_weight):
+
+    def weighted_binary_crossentropy(y_true, y_pred):
+
+        b_ce = K.binary_crossentropy(y_true[:,:,:,0:1], y_pred[:,:,:,0:1])
+
+        # Apply the weights
+        class_weight_vector = y_true[:,:,:,0:1] * one_weight + (1. - y_true[:,:,:,0:1]) * zero_weight
+
+        weight_vector = class_weight_vector * y_true[:,:,:,1:2]
+        weighted_b_ce = weight_vector * b_ce
+
+        # Return the mean error
+        return K.mean(weighted_b_ce)
+
+    return weighted_binary_crossentropy
