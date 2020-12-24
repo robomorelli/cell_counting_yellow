@@ -304,7 +304,7 @@ def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
                                       callbacks=callbacks,
                                       epochs=200,
                                       use_multiprocessing=True,
-                                      workers=8
+                                      workers=8*gpus
                                       )
     else:
 
