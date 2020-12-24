@@ -20,12 +20,14 @@ if 'cnaf' in o:
         o = subprocess.run(["pwd"],  capture_output=True)
         o = o.stdout
         o = o.strip().decode('utf-8')
-        root = o
+        # root = o
+        root = '/storage/gpfs_maestro/hpc/user/rmorellihpc/cell_counting_yellow/'
     except:
         o = subprocess.run(["pwd"],  stdout=PIPE, stderr=PIPE)
         o = o.stdout
         o = o.strip().decode('utf-8')
-        root = o
+        # root = o
+        root = '/storage/gpfs_maestro/hpc/user/rmorellihpc/cell_counting_yellow/'
 else:
     root = ''
 

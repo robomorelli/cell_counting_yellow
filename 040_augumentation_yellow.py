@@ -38,7 +38,7 @@ from utils import *
 image_ids = os.listdir(CropImages)
 image_ids.sort()
 shift = len(image_ids)
-id_edges = [300, 302, 1161, 1380, 1908, 206] #These numbers are valid if use our test
+id_edges = [300, 302, 1161, 1380, 1908, 2064] #These numbers are valid if use our test
 
 if __name__ == "__main__":
 
@@ -82,6 +82,8 @@ if __name__ == "__main__":
             except:
                 pass
             os.makedirs(AugCropMasksBasic,exist_ok=True)
+            path_images = AugCropImagesBasic
+            path_masks = AugCropMasksBasic
         else:
             try:
                 shutil.rmtree(AugCropImages)
@@ -93,6 +95,8 @@ if __name__ == "__main__":
             except:
                 pass
             os.makedirs(AugCropMasks,exist_ok=True)
+            path_images = AugCropImages
+            path_masks = AugCropMasks
 
     src_files = os.listdir(CropImages)
     # src_files_i.sort()
@@ -106,16 +110,16 @@ if __name__ == "__main__":
         for file_name in src_files:
             full_file_name = os.path.join(CropImages, file_name)
             if os.path.isfile(full_file_name):
-                shutil.copy(full_file_name, AugCropImages)
+                shutil.copy(full_file_name, path_images)
 
     if not args.no_copy_masks:
         print('copying masks')
         for file_name in src_files:
             full_file_name = os.path.join(CropWeightedMasks, file_name)
             if os.path.isfile(full_file_name):
-                shutil.copy(full_file_name, AugCropMasks)
+                shutil.copy(full_file_name, path_masks)
 
     make_data_augmentation(image_ids, CropImages,  CropWeightedMasks, args.split_num, id_new_images,
-                           args.split_num_new_images, id_edges, AugCropImages, AugCropMasks,  shift
+                           args.split_num_new_images, id_edges, path_images, path_masks,  shift
                            , args.unique_split, args.no_artifact_aug
                            )
