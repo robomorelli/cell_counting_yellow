@@ -16,9 +16,19 @@ except:
     o = o.strip().decode('utf-8')
 
 if 'cnaf' in o:
-    root = '/storage/gpfs_maestro/hpc/user/rmorellihpc/cell_counting_yellow/'
+    try:
+        o = subprocess.run(["pwd"],  capture_output=True)
+        o = o.stdout
+        o = o.strip().decode('utf-8')
+        root = o
+    except:
+        o = subprocess.run(["pwd"],  stdout=PIPE, stderr=PIPE)
+        o = o.stdout
+        o = o.strip().decode('utf-8')
+        root = o
 else:
     root = ''
+
 OriginalImages = root + 'DATASET/original_images/images/'
 OriginalMasks = root + 'DATASET/original_masks/masks/'
 
