@@ -23,7 +23,7 @@ from keras import optimizers
 import random
 import argparse
 import pathlib
-from tensorflow.keras.utils import multi_gpu_model
+from keras.utils import multi_gpu_model
 import subprocess
 from subprocess import PIPE
 

@@ -95,6 +95,12 @@ if __name__ == "__main__":
             os.makedirs(AugCropMasks,exist_ok=True)
 
     src_files = os.listdir(CropImages)
+    # src_files_i.sort()
+    # src_files_m = os.listdir(CropWeightedMasks)
+    # src_files_m.sort()
+
+    limits = min((len(src_files_i), len(src_files_m)))
+
     if not args.no_copy_images:
         print('copying images')
         for file_name in src_files:
@@ -104,7 +110,6 @@ if __name__ == "__main__":
 
     if not args.no_copy_masks:
         print('copying masks')
-        src_files = os.listdir(CropWeightedMasks)
         for file_name in src_files:
             full_file_name = os.path.join(CropWeightedMasks, file_name)
             if os.path.isfile(full_file_name):
