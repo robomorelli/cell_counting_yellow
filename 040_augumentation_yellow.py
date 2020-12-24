@@ -38,7 +38,7 @@ from utils import *
 image_ids = os.listdir(CropImages)
 image_ids.sort()
 shift = len(image_ids)
-id_edges = [492, 969, 1116, 2001, 2322, 2325, 2326, 2327, 2328, 2330, 2333, 2336] #These numbers are valid if use our test
+id_edges = [300, 302, 1161, 1380, 1908, 206] #These numbers are valid if use our test
 
 if __name__ == "__main__":
 
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     # src_files_m = os.listdir(CropWeightedMasks)
     # src_files_m.sort()
 
-    limits = min((len(src_files_i), len(src_files_m)))
+    # limits = min((len(src_files_i), len(src_files_m)))
 
     if not args.no_copy_images:
         print('copying images')
