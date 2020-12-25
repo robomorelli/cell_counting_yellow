@@ -73,12 +73,12 @@ if __name__ == "__main__":
         os.makedirs(str(Path(images_path).parent) + '_splitted_images',exist_ok=True)
 
         try:
-            shutil.rmtree(str(Path(masks_path).parent) + '_splitted_images')
+            shutil.rmtree(str(Path(masks_path).parent) + '_splitted_masks')
         except:
             pass
-        os.makedirs(str(Path(masks_path).parent) + '_splitted_images',exist_ok=True)
+        os.makedirs(str(Path(masks_path).parent) + '_splitted_masks',exist_ok=True)
 
-        print('Splitting image in train_val and test')
+    print('Splitting image in train_val and test')
 
     split_images_in_folder(Path(images_path), 'images')
     split_images_in_folder(Path(masks_path), 'masks')
