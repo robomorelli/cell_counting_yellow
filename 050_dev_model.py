@@ -288,7 +288,7 @@ def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
         model.compile(optimizer=SGD, loss=WeightedLoss, metrics=[mean_iou, dice_coef])
 
     checkpointer = ModelCheckpoint(str(MODEL_CHECKPOINTS/model_name), verbose=1, save_best_only=True)
-    earlystopping = EarlyStopping(monitor='val_loss', patience=30)
+    earlystopping = EarlyStopping(monitor='val_loss', patience=20)
 
     ReduceLR = ReduceLROnPlateau(monitor='val_loss', factor=0.7, patience=5, verbose=1,
                              mode='auto', cooldown=0, min_lr=9e-8)
