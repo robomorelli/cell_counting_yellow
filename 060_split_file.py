@@ -21,6 +21,7 @@ from tqdm import tqdm
 from shutil import move, copy
 from pathlib import Path
 import argparse
+import shutil
 
 from config import *
 
@@ -52,6 +53,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='weighting masks')
 
     parser.add_argument('--images', nargs="?", default = AugCropImages, help='path including images for training')
+    parser.add_argument('--start_from_zero', action='store_const', const=True, default=True, help='remove previous file in the destination folder')
 
     args = parser.parse_args()
     if args.images == 'AugCropImagesBasic':
@@ -60,6 +62,23 @@ if __name__ == "__main__":
     else:
         images_path = AugCropImages
         masks_path = AugCropMasks
+
+    if args.start_from_zero:
+        print('deleting existing files in destination folder')
+
+        try:
+            shutil.rmtree(str(Path(images_path).parent) + '_splitted_images')
+        except:
+            pass
+        os.makedirs(str(Path(images_path).parent) + '_splitted_images',exist_ok=True)
+
+        try:
+            shutil.rmtree(str(Path(masks_path).parent) + '_splitted_images')
+        except:
+            pass
+        os.makedirs(str(Path(masks_path).parent) + '_splitted_images',exist_ok=True)
+
+        print('Splitting image in train_val and test')
 
     split_images_in_folder(Path(images_path), 'images')
     split_images_in_folder(Path(masks_path), 'masks')
