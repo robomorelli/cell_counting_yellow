@@ -315,6 +315,278 @@ def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
                                       callbacks=callbacks,
                                       epochs=200)
 
+
+def ResUnetBasic(train_generator, valid_generator, weights , class_0_w , class_1_w,
+             n , model_name, compiler, gpus, cluster):
+
+    inputs = Input((None, None, 3))
+
+    c1 = Conv2D(4*n, (3, 3), padding='same',  kernel_initializer='he_normal')(inputs)
+    c1 = BatchNormalization()(c1)
+    c1 = Activation('elu')(c1)
+
+    c1 = Conv2D(4*n, (3, 3), padding='same', kernel_initializer='he_normal')(c1)
+
+    p1 = MaxPooling2D((2, 2))(c1)
+    ##########################################
+    X_shortcut = Conv2D(8*n, (1, 1), padding='same', kernel_initializer='he_normal')(p1)
+    # X_shortcut = BatchNormalization()(X_shortcut)
+
+    c2 = BatchNormalization()(p1)
+    c2 = Activation('elu')(c2)
+    c2 = Conv2D(8*n, (3, 3), padding='same', kernel_initializer='he_normal')(c2)
+
+    c2 = BatchNormalization()(c2)
+    c2 = Activation('elu')(c2)
+    c2 = Conv2D(8*n, (3, 3), padding='same', kernel_initializer='he_normal')(c2)
+
+    c2 = Add()([c2, X_shortcut])
+
+    p2 = MaxPooling2D((2, 2))(c2)
+
+    ##########################################
+    X_shortcut = Conv2D(16*n, (1, 1), padding='same', kernel_initializer='he_normal')(p2)
+    # X_shortcut = BatchNormalization()(X_shortcut)
+
+    c3 = BatchNormalization()(p2)
+    c3 = Activation('elu')(c3)
+    c3 = Conv2D(16*n, (3, 3), padding='same', kernel_initializer='he_normal')(c3)
+
+    c3 = BatchNormalization()(c3)
+    c3 = Activation('elu')(c3)
+    c3 = Conv2D(16*n, (3, 3), padding='same', kernel_initializer='he_normal')(c3)
+
+    c3 = Add()([c3, X_shortcut])
+
+    p3 = MaxPooling2D((2, 2))(c3)
+    ###################Bridge#######################
+    X_shortcut = Conv2D(32*n, (1, 1), padding='same', kernel_initializer='he_normal')(p3)
+    # X_shortcut = BatchNormalization()(X_shortcut)
+
+    c4 = BatchNormalization()(p3)
+    c4 = Activation('elu')(c4)
+    c4 = Conv2D(32*n, (5, 5), padding='same',kernel_initializer='he_normal')(c4)
+
+    c4 = BatchNormalization()(c4)
+    c4 = Activation('elu')(c4)
+    c4 = Conv2D(32*n, (5, 5), padding='same',kernel_initializer='he_normal')(c4)
+
+    c4 = Add()([c4, X_shortcut])
+
+    ###################END BRIDGE#######################
+    X_shortcut = Conv2DTranspose(16*n, (2, 2), strides=(2, 2), padding='same') (c4)
+    # X_shortcut = BatchNormalization()(X_shortcut)
+    u5 = concatenate([X_shortcut, c3])
+
+    # u6 = Conv2D(16*n, (1, 1), padding='same', kernel_initializer='he_normal')(u6)
+    c5 = BatchNormalization()(u5)
+    c5 = Activation('elu')(c5)
+    c5 = Conv2D(16*n, (3, 3), padding='same', kernel_initializer='he_normal')(c5)
+
+    c5 = BatchNormalization()(c5)
+    c5 = Activation('elu')(c5)
+    c5 = Conv2D(16*n, (3, 3), padding='same', kernel_initializer='he_normal')(c5)
+
+    c5 = Add()([c5, X_shortcut])
+    ################################################
+    X_shortcut = Conv2DTranspose(8*n, (2, 2), strides=(2, 2), padding='same') (c5)
+    # X_shortcut = BatchNormalization()(X_shortcut)
+    u6 = concatenate([X_shortcut, c2])
+
+    # u7 = Conv2D(8*n, (1, 1), padding='same', kernel_initializer='he_normal')(u7)
+
+    c6 = BatchNormalization()(u6)
+    c6 = Activation('elu')(c6)
+    c6 = Conv2D(8*n, (3, 3), padding='same',kernel_initializer='he_normal')(c6)
+
+    c6 = BatchNormalization()(c6)
+    c6 = Activation('elu')(c6)
+    c6 = Conv2D(8*n, (3, 3), padding='same',kernel_initializer='he_normal')(c6)
+
+    c6 = Add()([c6, X_shortcut])
+
+    X_shortcut = Conv2DTranspose(4*n, (2, 2), strides=(2, 2), padding='same') (c6)
+    # X_shortcut = BatchNormalization()(X_shortcut)
+    u7 = concatenate([X_shortcut, c1])
+    # u8 = Conv2D(4*n, (1, 1), padding='same', kernel_initializer='he_normal')(u8
+
+    c7 = BatchNormalization()(u7)
+    c7 = Activation('elu')(c7)
+    c7 = Conv2D(4*n, (3, 3), padding='same',kernel_initializer='he_normal')(c7)
+
+    c7 = BatchNormalization()(c7)
+    c7 = Activation('elu')(c7)
+    c7 = Conv2D(4*n, (3, 3), padding='same',kernel_initializer='he_normal')(c7)
+
+    c7 = Add()([c7, X_shortcut])
+
+    outputs = Conv2D(1, (1, 1), activation='sigmoid') (c7)
+
+    model = Model(inputs=[inputs], outputs=[outputs])
+
+    model.summary()
+
+    if weights == 'wbce':
+        WeightedLoss = create_weighted_binary_crossentropy(class_0_w, class_1_w)
+
+    elif weights == 'map_weights':
+        WeightedLoss = create_weighted_binary_crossentropy_overcrowding(class_0_w, class_1_w)
+
+    if gpus>1:
+        model = multi_gpu_model(model, gpus=gpus)
+
+    # with tf.device("/cpu:0"):
+		# initialize the model
+		# model = MiniGoogLeNet.build(width=32, height=32, depth=3,
+		# 	classes=10)
+    if compiler == 'Adam':
+        Adam = optimizers.Adam(lr=0.001)
+        model.compile(optimizer=Adam, loss=WeightedLoss, metrics=[mean_iou, dice_coef])
+    elif compiler == 'SGD':
+        SGD = optimizers.SGD(lr=0.003, momentum = 0.9)
+        model.compile(optimizer=SGD, loss=WeightedLoss, metrics=[mean_iou, dice_coef])
+
+    checkpointer = ModelCheckpoint(str(MODEL_CHECKPOINTS/model_name), verbose=1, save_best_only=True)
+    earlystopping = EarlyStopping(monitor='val_loss', patience=20)
+
+    ReduceLR = ReduceLROnPlateau(monitor='val_loss', factor=0.7, patience=5, verbose=1,
+                             mode='auto', cooldown=0, min_lr=9e-8)
+
+    callbacks = [checkpointer, earlystopping, ReduceLR]
+
+    if cluster:
+
+        results = model.fit_generator(train_generator,
+                                      steps_per_epoch=train_number/BATCH_SIZE,
+                                      validation_data=valid_generator,
+                                      validation_steps=valid_number/VALID_BATCH_SIZE,
+                                      callbacks=callbacks,
+                                      epochs=200,
+                                      use_multiprocessing=True,
+                                      workers=8*gpus
+                                      )
+    else:
+
+        results = model.fit_generator(train_generator,
+                                      steps_per_epoch=train_number/BATCH_SIZE,
+                                      validation_data=valid_generator,
+                                      validation_steps=valid_number/VALID_BATCH_SIZE,
+                                      callbacks=callbacks,
+                                      epochs=200)
+
+def Unet(train_generator, valid_generator, weights , class_0_w , class_1_w,
+             n , model_name, compiler, gpus, cluster):
+
+    inputs = Input((None, None, 3))
+
+    c1 = Conv2D(8*n, (3, 3), activation='elu', kernel_initializer='he_normal', padding='same') (inputs)
+    c1 = BatchNormalization()(c1)
+    c1 = Conv2D(8*n, (3, 3), activation='elu', kernel_initializer='he_normal', padding='same') (c1)
+    c1 = BatchNormalization()(c1)
+    p1 = MaxPooling2D((2, 2)) (c1)
+
+    c2 = Conv2D(16*n, (3, 3), activation='elu', kernel_initializer='he_normal', padding='same') (p1)
+    c2 = BatchNormalization()(c2)
+    c2 = Conv2D(16*n, (3, 3), activation='elu', kernel_initializer='he_normal', padding='same') (c2)
+    c2 = BatchNormalization()(c2)
+    p2 = MaxPooling2D((2, 2)) (c2)
+
+    c3 = Conv2D(32*n, (3, 3), activation='elu', kernel_initializer='he_normal', padding='same') (p2)
+    c3 = BatchNormalization()(c3)
+    c3 = Conv2D(32*n, (3, 3), activation='elu', kernel_initializer='he_normal', padding='same') (c3)
+    c3 = BatchNormalization()(c3)
+
+    p3 = MaxPooling2D((2, 2)) (c3)
+
+    c4 = Conv2D(64*n, (3, 3), activation='elu', kernel_initializer='he_normal', padding='same') (p3)
+    c4 = BatchNormalization()(c4)
+    c4 = Conv2D(64*n, (3, 3), activation='elu', kernel_initializer='he_normal', padding='same') (c4)
+    c4 = BatchNormalization()(c4)
+    p4 = MaxPooling2D(pool_size=(2, 2)) (c4)
+
+    c5 = Conv2D(128*n, (5, 5), activation='elu', kernel_initializer='he_normal', padding='same') (p4)
+    c5 = BatchNormalization()(c5)
+    c5 = Conv2D(128*n, (5, 5), activation='elu', kernel_initializer='he_normal', padding='same') (c5)
+    c5 = BatchNormalization()(c5)
+
+    u6 = Conv2DTranspose(64*n, (2, 2), strides=(2, 2), padding='same') (c5)
+    u6 = BatchNormalization()(u6)
+    u6 = concatenate([u6, c4])
+    c6 = Conv2D(64*n, (3, 3), activation='elu', kernel_initializer='he_normal', padding='same') (u6)
+    c6 = BatchNormalization()(c6)
+    c6 = Conv2D(64*n, (3, 3), activation='elu', kernel_initializer='he_normal', padding='same') (c6)
+    c6 = BatchNormalization()(c6)
+
+    u7 = Conv2DTranspose(32*n, (2, 2), strides=(2, 2), padding='same') (c6)
+    u7 = BatchNormalization()(u7)
+    u7 = concatenate([u7, c3])
+    c7 = Conv2D(32*n, (3, 3), activation='elu', kernel_initializer='he_normal', padding='same') (u7)
+    c7 = BatchNormalization()(c7)
+    c7 = Conv2D(32*n, (3, 3), activation='elu', kernel_initializer='he_normal', padding='same') (c7)
+    c7 = BatchNormalization()(c7)
+
+    u8 = Conv2DTranspose(16*n, (2, 2), strides=(2, 2), padding='same') (c7)
+    u8 = BatchNormalization()(u8)
+    u8 = concatenate([u8, c2])
+    c8 = Conv2D(16*n, (3, 3), activation='elu', kernel_initializer='he_normal', padding='same') (u8)
+    c8 = BatchNormalization()(c8)
+    c8 = Conv2D(16*n, (3, 3), activation='elu', kernel_initializer='he_normal', padding='same') (c8)
+
+    outputs = Conv2D(1, (1, 1), activation='sigmoid') (c8)
+
+    model = Model(inputs=[inputs], outputs=[outputs])
+
+    model.summary()
+
+    if weights == 'wbce':
+        WeightedLoss = create_weighted_binary_crossentropy(class_0_w, class_1_w)
+
+    elif weights == 'map_weights':
+        WeightedLoss = create_weighted_binary_crossentropy_overcrowding(class_0_w, class_1_w)
+
+    if gpus>1:
+        model = multi_gpu_model(model, gpus=gpus)
+
+    # with tf.device("/cpu:0"):
+		# initialize the model
+		# model = MiniGoogLeNet.build(width=32, height=32, depth=3,
+		# 	classes=10)
+    if compiler == 'Adam':
+        Adam = optimizers.Adam(lr=0.001)
+        model.compile(optimizer=Adam, loss=WeightedLoss, metrics=[mean_iou, dice_coef])
+    elif compiler == 'SGD':
+        SGD = optimizers.SGD(lr=0.003, momentum = 0.9)
+        model.compile(optimizer=SGD, loss=WeightedLoss, metrics=[mean_iou, dice_coef])
+
+    checkpointer = ModelCheckpoint(str(MODEL_CHECKPOINTS/model_name), verbose=1, save_best_only=True)
+    earlystopping = EarlyStopping(monitor='val_loss', patience=20)
+
+    ReduceLR = ReduceLROnPlateau(monitor='val_loss', factor=0.7, patience=5, verbose=1,
+                             mode='auto', cooldown=0, min_lr=9e-8)
+
+    callbacks = [checkpointer, earlystopping, ReduceLR]
+
+    if cluster:
+
+        results = model.fit_generator(train_generator,
+                                      steps_per_epoch=train_number/BATCH_SIZE,
+                                      validation_data=valid_generator,
+                                      validation_steps=valid_number/VALID_BATCH_SIZE,
+                                      callbacks=callbacks,
+                                      epochs=200,
+                                      use_multiprocessing=True,
+                                      workers=8*gpus
+                                      )
+    else:
+
+        results = model.fit_generator(train_generator,
+                                      steps_per_epoch=train_number/BATCH_SIZE,
+                                      validation_data=valid_generator,
+                                      validation_steps=valid_number/VALID_BATCH_SIZE,
+                                      callbacks=callbacks,
+                                      epochs=200)
+
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='weighting masks')
@@ -400,7 +672,20 @@ if __name__ == "__main__":
     #batch size, img size # model, #n, #map_weight,#name model# color_mode
     train_generator, valid_generator = imageGenerator(color_mode='rgb')
 
+    if args.model_name == 'ResUnetBasic':
+        print('ResUnetbasic')
+        ResUnetBasic(train_generator,valid_generator, weights = args.weights, class_0_w = args.class_weights[0]
+                , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n,
+                compiler = args.compiler, gpus = args.gpus, cluster=cluster)
 
-    ResUnet(train_generator,valid_generator, weights = args.weights, class_0_w = args.class_weights[0]
-            , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n,
-            compiler = args.compiler, gpus = args.gpus, cluster=cluster)
+    elif args.model_name == 'Unet':
+        print('Unet')
+        Unet(train_generator,valid_generator, weights = args.weights, class_0_w = args.class_weights[0]
+                , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n,
+                compiler = args.compiler, gpus = args.gpus, cluster=cluster)
+
+    else:
+        print('ResUnet')
+        ResUnet(train_generator,valid_generator, weights = args.weights, class_0_w = args.class_weights[0]
+                , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n,
+                compiler = args.compiler, gpus = args.gpus, cluster=cluster)
