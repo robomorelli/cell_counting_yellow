@@ -586,6 +586,118 @@ def Unet(train_generator, valid_generator, weights , class_0_w , class_1_w,
                                       callbacks=callbacks,
                                       epochs=200)
 
+def UnetOriginal(train_generator, valid_generator, weights , class_0_w , class_1_w,
+             n , model_name, compiler, gpus, cluster):
+
+    inputs = Input((None, None, 3))
+
+    c1 = Conv2D(8*n, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same') (inputs)
+    # c1 = BatchNormalization()(c1)
+    c1 = Conv2D(8*n, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same') (c1)
+    # c1 = BatchNormalization()(c1)
+    p1 = MaxPooling2D((2, 2)) (c1)
+
+    c2 = Conv2D(16*n, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same') (p1)
+    # c2 = BatchNormalization()(c2)
+    c2 = Conv2D(16*n, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same') (c2)
+    # c2 = BatchNormalization()(c2)
+    p2 = MaxPooling2D((2, 2)) (c2)
+
+    c3 = Conv2D(32*n, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same') (p2)
+    # c3 = BatchNormalization()(c3)
+    c3 = Conv2D(32*n, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same') (c3)
+    # c3 = BatchNormalization()(c3)
+
+    p3 = MaxPooling2D((2, 2)) (c3)
+
+    c4 = Conv2D(64*n, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same') (p3)
+    # c4 = BatchNormalization()(c4)
+    c4 = Conv2D(64*n, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same') (c4)
+    # c4 = BatchNormalization()(c4)
+    p4 = MaxPooling2D(pool_size=(2, 2)) (c4)
+
+    c5 = Conv2D(128*n, (5, 5), activation='relu', kernel_initializer='he_normal', padding='same') (p4)
+    # c5 = BatchNormalization()(c5)
+    c5 = Conv2D(128*n, (5, 5), activation='relu', kernel_initializer='he_normal', padding='same') (c5)
+    # c5 = BatchNormalization()(c5)
+
+    u6 = Conv2DTranspose(64*n, (2, 2), strides=(2, 2), padding='same') (c5)
+    # u6 = BatchNormalization()(u6)
+    u6 = concatenate([u6, c4])
+    c6 = Conv2D(64*n, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same') (u6)
+    # c6 = BatchNormalization()(c6)
+    c6 = Conv2D(64*n, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same') (c6)
+    # c6 = BatchNormalization()(c6)
+
+    u7 = Conv2DTranspose(32*n, (2, 2), strides=(2, 2), padding='same') (c6)
+    # u7 = BatchNormalization()(u7)
+    u7 = concatenate([u7, c3])
+    c7 = Conv2D(32*n, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same') (u7)
+    # c7 = BatchNormalization()(c7)
+    c7 = Conv2D(32*n, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same') (c7)
+    # c7 = BatchNormalization()(c7)
+
+    u8 = Conv2DTranspose(16*n, (2, 2), strides=(2, 2), padding='same') (c7)
+    # u8 = BatchNormalization()(u8)
+    u8 = concatenate([u8, c2])
+    # c8 = Conv2D(16*n, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same') (u8)
+    c8 = BatchNormalization()(c8)
+    # c8 = Conv2D(16*n, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same') (c8)
+
+    outputs = Conv2D(1, (1, 1), activation='sigmoid') (c8)
+
+    model = Model(inputs=[inputs], outputs=[outputs])
+
+    model.summary()
+
+    if weights == 'wbce':
+        WeightedLoss = create_weighted_binary_crossentropy(class_0_w, class_1_w)
+
+    elif weights == 'map_weights':
+        WeightedLoss = create_weighted_binary_crossentropy_overcrowding(class_0_w, class_1_w)
+
+    if gpus>1:
+        model = multi_gpu_model(model, gpus=gpus)
+
+    # with tf.device("/cpu:0"):
+		# initialize the model
+		# model = MiniGoogLeNet.build(width=32, height=32, depth=3,
+		# 	classes=10)
+    if compiler == 'Adam':
+        Adam = optimizers.Adam(lr=0.001)
+        model.compile(optimizer=Adam, loss=WeightedLoss, metrics=[mean_iou, dice_coef])
+    elif compiler == 'SGD':
+        SGD = optimizers.SGD(lr=0.003, momentum = 0.9)
+        model.compile(optimizer=SGD, loss=WeightedLoss, metrics=[mean_iou, dice_coef])
+
+    checkpointer = ModelCheckpoint(str(MODEL_CHECKPOINTS/model_name), verbose=1, save_best_only=True)
+    earlystopping = EarlyStopping(monitor='val_loss', patience=20)
+
+    ReduceLR = ReduceLROnPlateau(monitor='val_loss', factor=0.7, patience=5, verbose=1,
+                             mode='auto', cooldown=0, min_lr=9e-8)
+
+    callbacks = [checkpointer, earlystopping, ReduceLR]
+
+    if cluster:
+
+        results = model.fit_generator(train_generator,
+                                      steps_per_epoch=train_number/BATCH_SIZE,
+                                      validation_data=valid_generator,
+                                      validation_steps=valid_number/VALID_BATCH_SIZE,
+                                      callbacks=callbacks,
+                                      epochs=200,
+                                      use_multiprocessing=True,
+                                      workers=8*gpus
+                                      )
+    else:
+
+        results = model.fit_generator(train_generator,
+                                      steps_per_epoch=train_number/BATCH_SIZE,
+                                      validation_data=valid_generator,
+                                      validation_steps=valid_number/VALID_BATCH_SIZE,
+                                      callbacks=callbacks,
+                                      epochs=200)
+
 
 if __name__ == "__main__":
 
@@ -679,6 +791,12 @@ if __name__ == "__main__":
                 compiler = args.compiler, gpus = args.gpus, cluster=cluster)
 
     elif args.model_name == 'Unet':
+        print('Unet')
+        Unet(train_generator,valid_generator, weights = args.weights, class_0_w = args.class_weights[0]
+                , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n,
+                compiler = args.compiler, gpus = args.gpus, cluster=cluster)
+
+    elif args.model_name == 'UnetOriginal': #n should be 8
         print('Unet')
         Unet(train_generator,valid_generator, weights = args.weights, class_0_w = args.class_weights[0]
                 , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n,
