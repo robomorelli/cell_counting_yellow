@@ -268,9 +268,11 @@ def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
     model.summary()
 
     if weights == 'wbce':
+        print('wbce no map of weights allowed')
         WeightedLoss = create_weighted_binary_crossentropy(class_0_w, class_1_w)
 
     elif weights == 'map_weights':
+        print('map of weight allowed')
         WeightedLoss = create_weighted_binary_crossentropy_overcrowding(class_0_w, class_1_w)
 
     if gpus>1:
