@@ -479,6 +479,7 @@ def ResUnetBasic(train_generator, valid_generator, weights , class_0_w , class_1
 def Unet(train_generator, valid_generator, weights , class_0_w , class_1_w,
              n , model_name, compiler, gpus, cluster):
 
+
     inputs = Input((None, None, 3))
 
     c1 = Conv2D(8*n, (3, 3), activation='relu', kernel_initializer='he_normal', padding='same') (inputs)
@@ -719,7 +720,7 @@ if __name__ == "__main__":
 
     parser.add_argument('--weights', nargs="?", type = str, default = 'map_weights',  help='wbce for weighted bce or map_weights for overcrowding map')
     parser.add_argument('--class_weights', nargs="?", type = list, default = [1, 1.5],  help='class 0 and class 1 weights')
-    parser.add_argument('--n', nargs="?", type = list, default = 4,  help='number of layer multiplier factor, starting from n0 = 4')
+    parser.add_argument('--n', nargs="?", type = int, default = 4,  help='number of layer multiplier factor, starting from n0 = 4')
 
     args = parser.parse_args()
 
