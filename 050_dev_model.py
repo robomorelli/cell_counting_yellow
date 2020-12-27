@@ -799,7 +799,7 @@ if __name__ == "__main__":
                 compiler = args.compiler, gpus = args.gpus, cluster=cluster)
 
     elif args.model_name == 'UnetOriginal': #n should be 8
-        print('Unet')
+        print('UnetOriginal')
         Unet(train_generator,valid_generator, weights = args.weights, class_0_w = args.class_weights[0]
                 , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n,
                 compiler = args.compiler, gpus = args.gpus, cluster=cluster)
