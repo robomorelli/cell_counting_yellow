@@ -35,20 +35,24 @@ else:
 OriginalImages = root + 'DATASET/original_images/images/'
 OriginalMasks = root + 'DATASET/original_masks/masks/'
 
-if not os.path.exists(OriginalImages):
-    os.makedirs(OriginalImages)
-
-if not os.path.exists(OriginalMasks):
-    os.makedirs(OriginalMasks)
+# if not os.path.exists(OriginalImages):
+#     os.makedirs(OriginalImages)
+#
+# if not os.path.exists(OriginalMasks):
+#     os.makedirs(OriginalMasks)
 
 NewImages = root + 'DATASET/new_images/images/'
 NewMasks = root + 'DATASET/new_masks/masks/'
 
-if not os.path.exists(NewImages):
-    os.makedirs(NewImages)
 
-if not os.path.exists(NewMasks):
-    os.makedirs(NewMasks)
+NewTestImages = root + 'DATASET/new_test/images/'
+NewTestsMasks = root + 'DATASET/new_test/masks/'
+
+# if not os.path.exists(NewImages):
+#     os.makedirs(NewImages)
+#
+# if not os.path.exists(NewMasks):
+#     os.makedirs(NewMasks)
 
 # Temporary folder for the union of original and new images, final dataset that we are going to share is going to be in
 # DATASET/train_val/{images, masks}_before_crop and DATASET/test/all_{images,masks}
