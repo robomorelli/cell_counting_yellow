@@ -1,33 +1,20 @@
 #TODO: check imports and function definitions to exclude the ones that are no longer relevant
 
-# Data manipulation
+
+import argparse
+parser = argparse.ArgumentParser(description='Run evaluation pipeline for specified model name')
+parser.add_argument('model_name', metavar='name', type=str,  default="ResUnet", # nargs='+',
+	            help='Name(s) of the model(s) to evaluate.')
+parser.add_argument('--out_folder', metavar='folder', type=str,  default="results",
+	            help='Output folder.')	
+args = parser.parse_args()
+
 from pathlib import Path
-from skimage.feature import peak_local_max
-from skimage.morphology import remove_small_holes, remove_small_objects, label
-from skimage.segmentation import watershed
-from skimage.filters import sobel
-from scipy import ndimage
-from math import hypot
-import pandas as pd
-import numpy as np
-
-import multiprocessing as mp
-from tqdm import tqdm
-import cv2
-from matplotlib import pyplot as plt
-
-from keras.models import load_model, Model, Sequential
-from keras import backend as K
-import tensorflow as tf
 
 # setup paths --> NOTE: CURRENT PATHS ARE TO BE UPDATED
 repo_path = Path("/home/luca/PycharmProjects/cell_counting_yellow")
 TRAIN_IMG_PATH = repo_path / "DATASET/OLD/sample_valid/images"
 TRAIN_MASKS_PATH = repo_path / "DATASET/OLD/sample_valid/masks"
-model_name = "ResUnet.h5"
-model_path = "{}/model_results/{}".format(repo_path, model_name)
-save_path = repo_path / "results"
-save_path.mkdir(parents=True, exist_ok=True)
 
 # define auxiliary functions --> NOTE: TO CHECK REDUNDANCY WITH OTHER UTILS SCRIPTS
 
@@ -194,11 +181,34 @@ def plot_thresh_opt(df, save_path=None):
     line = plt.xlabel('Threshold', size=15 )
     line = plt.axvline(df.F1.idxmax(), color='firebrick', linestyle='--')
     if save_path:
-        outname = save_path / 'f1_score_thresh_opt.png'
+        outname = save_path / 'f1_score_thresh_opt_{}.png'.format(model_name[:-3])
         _ = plt.savefig(outname, dpi = 900, bbox_inches='tight' )
     return line  
     
 if __name__ == "__main__":
+
+	from skimage.feature import peak_local_max
+	from skimage.morphology import remove_small_holes, remove_small_objects, label
+	from skimage.segmentation import watershed
+	from skimage.filters import sobel
+	from scipy import ndimage
+	from math import hypot
+	import pandas as pd
+	import numpy as np
+
+	from tqdm import tqdm
+	import cv2
+	from matplotlib import pyplot as plt
+
+	from keras.models import load_model, Model, Sequential
+	from keras import backend as K
+	import tensorflow as tf
+
+	model_name = "{}.h5".format(args.model_name)
+	model_path = "{}/model_results/{}".format(repo_path, model_name)
+	save_path = repo_path / args.out_folder
+	save_path.mkdir(parents=True, exist_ok=True)
+#	print(model_path, save_path)
 	WeightedLoss = create_weighted_binary_crossentropy(1, 1.5)
 	model = load_model(model_path, custom_objects={'mean_iou': mean_iou, 'dice_coef': dice_coef, 
 			                                    'weighted_binary_crossentropy': WeightedLoss}, compile=False)      
@@ -223,6 +233,7 @@ if __name__ == "__main__":
 			compute_metrics(pred_mask_rgb, mask,
 					validation_metrics_rgb, img_path.name)
 		metrics_df_validation_rgb.loc[threshold] = F1Score(validation_metrics_rgb)
-	outname = save_path / 'metrics.csv'
+	outname = save_path / 'metrics_{}.csv'.format(model_name[:-3])
 	metrics_df_validation_rgb.to_csv(outname, index = True, index_label='Threshold')
 	_ = plot_thresh_opt(metrics_df_validation_rgb, save_path)
+
