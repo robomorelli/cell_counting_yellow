@@ -48,13 +48,43 @@ def main():
             plt.imsave(fname=img_dir, arr=np.squeeze(img_x))
             plt.imsave(fname=mask_dir, arr=np.squeeze(img_y), cmap='gray')
 
+    # NEW TEST IMAGES
+    test_images_name = os.listdir(NewTestImages)
+    # test_images_name = [x.replace('TIF', 'tif') for x in test_images_name]
+
+    test_masks_name = ['_'.join(x.split('_')[:2])+'_mask_'+'_'.join(x.split('_')[2:]) for x in test_images_name]
+    test_masks_name = [x.replace('TIF', 'tif') for x in test_masks_name]
+
+    for ix, im_name in enumerate(test_images_name):
+        #############Processing###############
+        print(im_name)
+        img_x = cv2.imread(str(NewTestImages) + im_name)
+        img_x = cv2.cvtColor(img_x, cv2.COLOR_BGR2RGB)
+        img_y = cv2.imread(str(NewTestsMasks) + test_masks_name[ix])
+        img_y = cv2.cvtColor(img_y, cv2.COLOR_BGR2RGB)[:, :, 0:1]
+
+        #############Processing###############
+        if len(np.unique(img_y)) > 2:
+            print(' restoring {}'.format(im_name))
+
+            ret, img_y = cv2.threshold(img_y, 75, 255, cv2.THRESH_BINARY)
+
+        img_y = img_y.astype(bool)
+        img_y = img_y.astype(np.uint8) * 255
+
+        #############Saving in new folder###############
+        img_dir = TestImages + '{}'.format(ix + tot_num) + '.tiff'
+        mask_dir = TestMasks + '{}'.format(ix + tot_num) + '.tiff'
+        plt.imsave(fname=img_dir, arr=np.squeeze(img_x))
+        plt.imsave(fname=mask_dir, arr=np.squeeze(img_y), cmap='gray')
+
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Define parameters for crop.')
     parser.add_argument('--start_from_zero', action='store_const', const=True, default=False,
                         help='remove previous file in the destination folder')
-    parser.add_argument('--not_use_our_test_set', action='store_const', const=True, default=False,
+    parser.add_argument('--random_test_set', action='store_const', const=True, default=False,
                         help='use our test set instead of a random generated one')
     args = parser.parse_args()
 
@@ -63,7 +93,7 @@ if __name__ == "__main__":
     test_names = []
     UpperLimit = tot_num - len(os.listdir(NewImages))
 
-    if args.not_use_our_test_set:
+    if args.random_test_set:
         random.seed(a=NumberTest, version=2)  # FIX the SEED#
 
         while len(test_names) < NumberTest:

@@ -786,23 +786,24 @@ if __name__ == "__main__":
     #batch size, img size # model, #n, #map_weight,#name model# color_mode
     train_generator, valid_generator = imageGenerator(color_mode='rgb')
 
-    if args.model_name == 'ResUnetBasic':
+    if 'resunetbasic' in args.model_name.lower():
         print('ResUnetbasic')
         ResUnetBasic(train_generator,valid_generator, weights = args.weights, class_0_w = args.class_weights[0]
                 , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n,
                 compiler = args.compiler, gpus = args.gpus, cluster=cluster)
 
-    elif args.model_name == 'Unet':
+    elif 'unetoriginal' in args.model_name.lower(): #n should be 8
+        print('UnetOriginal')
+        Unet(train_generator,valid_generator, weights = args.weights, class_0_w = args.class_weights[0]
+                , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n,
+                compiler = args.compiler, gpus = args.gpus, cluster=cluster)
+
+    elif 'unet' in args.model_name.lower():
         print('Unet')
         Unet(train_generator,valid_generator, weights = args.weights, class_0_w = args.class_weights[0]
                 , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n,
                 compiler = args.compiler, gpus = args.gpus, cluster=cluster)
 
-    elif args.model_name == 'UnetOriginal': #n should be 8
-        print('UnetOriginal')
-        Unet(train_generator,valid_generator, weights = args.weights, class_0_w = args.class_weights[0]
-                , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n,
-                compiler = args.compiler, gpus = args.gpus, cluster=cluster)
 
     else:
         print('ResUnet')

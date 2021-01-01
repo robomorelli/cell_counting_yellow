@@ -4,7 +4,7 @@
 *.pdf
 DATASET/*
 __pycache__/*
-
+model_results/
 # exclude notebook checkpoints
 .ipynb_checkpoints
 
