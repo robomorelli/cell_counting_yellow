@@ -210,10 +210,10 @@ if __name__ == "__main__":
 	model_path = "{}/model_results/{}".format(repo_path, model_name)
 	save_path = repo_path / args.out_folder
 	save_path.mkdir(parents=True, exist_ok=True)
-#	print(model_path, save_path)
+	save_path.chmod(777)
 	WeightedLoss = create_weighted_binary_crossentropy(1, 1.5)
 	model = load_model(model_path, custom_objects={'mean_iou': mean_iou, 'dice_coef': dice_coef, 
-			                                    'weighted_binary_crossentropy': WeightedLoss}, compile=False)      
+			                                    'weighted_binary_crossentropy': WeightedLoss})#, compile=False)      
 	threshold_seq = np.arange(start=0.2, stop=0.9, step=0.05)
 	metrics_df_validation_rgb = pd.DataFrame(None, columns=["F1", "MAE", "MedAE", "MPE", "accuracy",
 			                                        "precision", "recall"])
@@ -225,13 +225,14 @@ if __name__ == "__main__":
 		# loop on training images
 		for _, img_path in enumerate(TRAIN_IMG_PATH.iterdir()):
 			mask_path = TRAIN_MASKS_PATH / img_path.name
-
+			print(mask_path)
 			# compute predicted mask and read original mask
 			img = cv2.imread(str(img_path), cv2.IMREAD_COLOR)
 
 			pred_mask_rgb = make_UNet_prediction(
 			    img_path, threshold, model)
 			mask = cv2.imread(str(mask_path), cv2.IMREAD_GRAYSCALE)
+			print(img, mask)
 			compute_metrics(pred_mask_rgb, mask,
 					validation_metrics_rgb, img_path.name)
 		metrics_df_validation_rgb.loc[threshold] = F1Score(validation_metrics_rgb)
