@@ -17,7 +17,7 @@ args = parser.parse_args()
 from pathlib import Path
 
 # setup paths --> NOTE: CURRENT PATHS ARE TO BE UPDATED
-repo_path = Path("/home/luca/PycharmProjects/cell_counting_yellow")
+repo_path = Path("/storage/gpfs_maestro/hpc/user/rmorellihpc/cell_counting_yellow")
 if args.mode == "eval":
     IMG_PATH = repo_path / "DATASET/train_val/full_size/images"
     MASKS_PATH = repo_path / "DATASET/train_val/full_size/masks"
