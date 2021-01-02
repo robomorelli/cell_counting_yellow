@@ -14,3 +14,7 @@ results/*
 
 # exclude models
 model_results
+
+# exclude run script
+evaluate_model.sh
+run_test_cmd.txt
