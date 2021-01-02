@@ -144,17 +144,17 @@ def imageGenerator(color_mode = 'rgb'):
 
 
 def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
-             n , model_name, compiler, gpus, cluster):
+             n , activation, model_name, compiler, gpus, cluster):
 
     inputs = Input((None, None, 3))
 
     c0 = Conv2D(1, (1, 1), padding='same',  kernel_initializer='he_normal')(inputs)
     c0 = BatchNormalization()(c0)
-    c0 = Activation('elu')(c0)
+    c0 = Activation(activation)(c0)
 
     c1 = Conv2D(4*n, (3, 3), padding='same',  kernel_initializer='he_normal')(c0)
     c1 = BatchNormalization()(c1)
-    c1 = Activation('elu')(c1)
+    c1 = Activation(activation)(c1)
 
     c1 = Conv2D(4*n, (3, 3), padding='same', kernel_initializer='he_normal')(c1)
 
@@ -164,11 +164,11 @@ def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
     # X_shortcut = BatchNormalization()(X_shortcut)
 
     c2 = BatchNormalization()(p1)
-    c2 = Activation('elu')(c2)
+    c2 = Activation(activation)(c2)
     c2 = Conv2D(8*n, (3, 3), padding='same', kernel_initializer='he_normal')(c2)
 
     c2 = BatchNormalization()(c2)
-    c2 = Activation('elu')(c2)
+    c2 = Activation(activation)(c2)
     c2 = Conv2D(8*n, (3, 3), padding='same', kernel_initializer='he_normal')(c2)
 
     c2 = Add()([c2, X_shortcut])
@@ -180,11 +180,11 @@ def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
     # X_shortcut = BatchNormalization()(X_shortcut)
 
     c3 = BatchNormalization()(p2)
-    c3 = Activation('elu')(c3)
+    c3 = Activation(activation)(c3)
     c3 = Conv2D(16*n, (3, 3), padding='same', kernel_initializer='he_normal')(c3)
 
     c3 = BatchNormalization()(c3)
-    c3 = Activation('elu')(c3)
+    c3 = Activation(activation)(c3)
     c3 = Conv2D(16*n, (3, 3), padding='same', kernel_initializer='he_normal')(c3)
 
     c3 = Add()([c3, X_shortcut])
@@ -195,22 +195,22 @@ def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
     # X_shortcut = BatchNormalization()(X_shortcut)
 
     c4 = BatchNormalization()(p3)
-    c4 = Activation('elu')(c4)
+    c4 = Activation(activation)(c4)
     c4 = Conv2D(32*n, (5, 5), padding='same',kernel_initializer='he_normal')(c4)
 
     c4 = BatchNormalization()(c4)
-    c4 = Activation('elu')(c4)
+    c4 = Activation(activation)(c4)
     c4 = Conv2D(32*n, (5, 5), padding='same',kernel_initializer='he_normal')(c4)
 
     c4 = Add()([c4, X_shortcut])
     X_shortcut = c4
 
     c5 = BatchNormalization()(c4)
-    c5 = Activation('elu')(c5)
+    c5 = Activation(activation)(c5)
     c5 = Conv2D(32*n, (5, 5), padding='same',kernel_initializer='he_normal')(c5)
 
     c5 = BatchNormalization()(c5)
-    c5 = Activation('elu')(c5)
+    c5 = Activation(activation)(c5)
     c5 = Conv2D(32*n, (5, 5), padding='same',kernel_initializer='he_normal')(c5)
 
     c5 = Add()([c5, X_shortcut])
@@ -221,11 +221,11 @@ def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
 
     # u6 = Conv2D(16*n, (1, 1), padding='same', kernel_initializer='he_normal')(u6)
     c6 = BatchNormalization()(u6)
-    c6 = Activation('elu')(c6)
+    c6 = Activation(activation)(c6)
     c6 = Conv2D(16*n, (3, 3), padding='same', kernel_initializer='he_normal')(c6)
 
     c6 = BatchNormalization()(c6)
-    c6 = Activation('elu')(c6)
+    c6 = Activation(activation)(c6)
     c6 = Conv2D(16*n, (3, 3), padding='same', kernel_initializer='he_normal')(c6)
 
     c6 = Add()([c6, X_shortcut])
@@ -237,11 +237,11 @@ def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
     # u7 = Conv2D(8*n, (1, 1), padding='same', kernel_initializer='he_normal')(u7)
 
     c7 = BatchNormalization()(u7)
-    c7 = Activation('elu')(c7)
+    c7 = Activation(activation)(c7)
     c7 = Conv2D(8*n, (3, 3), padding='same',kernel_initializer='he_normal')(c7)
 
     c7 = BatchNormalization()(c7)
-    c7 = Activation('elu')(c7)
+    c7 = Activation(activation)(c7)
     c7 = Conv2D(8*n, (3, 3), padding='same',kernel_initializer='he_normal')(c7)
 
     c7 = Add()([c7, X_shortcut])
@@ -252,11 +252,11 @@ def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
     # u8 = Conv2D(4*n, (1, 1), padding='same', kernel_initializer='he_normal')(u8
 
     c8 = BatchNormalization()(u8)
-    c8 = Activation('elu')(c8)
+    c8 = Activation(activation)(c8)
     c8 = Conv2D(4*n, (3, 3), padding='same',kernel_initializer='he_normal')(c8)
 
     c8 = BatchNormalization()(c8)
-    c8 = Activation('elu')(c8)
+    c8 = Activation(activation)(c8)
     c8 = Conv2D(4*n, (3, 3), padding='same',kernel_initializer='he_normal')(c8)
 
     c8 = Add()([c8, X_shortcut])
@@ -319,13 +319,13 @@ def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
 
 
 def ResUnetBasic(train_generator, valid_generator, weights , class_0_w , class_1_w,
-             n , model_name, compiler, gpus, cluster):
+             n , activation, model_name, compiler, gpus, cluster):
 
     inputs = Input((None, None, 3))
 
     c1 = Conv2D(4*n, (3, 3), padding='same',  kernel_initializer='he_normal')(inputs)
     c1 = BatchNormalization()(c1)
-    c1 = Activation('elu')(c1)
+    c1 = Activation(activation)(c1)
 
     c1 = Conv2D(4*n, (3, 3), padding='same', kernel_initializer='he_normal')(c1)
 
@@ -335,11 +335,11 @@ def ResUnetBasic(train_generator, valid_generator, weights , class_0_w , class_1
     # X_shortcut = BatchNormalization()(X_shortcut)
 
     c2 = BatchNormalization()(p1)
-    c2 = Activation('elu')(c2)
+    c2 = Activation(activation)(c2)
     c2 = Conv2D(8*n, (3, 3), padding='same', kernel_initializer='he_normal')(c2)
 
     c2 = BatchNormalization()(c2)
-    c2 = Activation('elu')(c2)
+    c2 = Activation(activation)(c2)
     c2 = Conv2D(8*n, (3, 3), padding='same', kernel_initializer='he_normal')(c2)
 
     c2 = Add()([c2, X_shortcut])
@@ -351,11 +351,11 @@ def ResUnetBasic(train_generator, valid_generator, weights , class_0_w , class_1
     # X_shortcut = BatchNormalization()(X_shortcut)
 
     c3 = BatchNormalization()(p2)
-    c3 = Activation('elu')(c3)
+    c3 = Activation(activation)(c3)
     c3 = Conv2D(16*n, (3, 3), padding='same', kernel_initializer='he_normal')(c3)
 
     c3 = BatchNormalization()(c3)
-    c3 = Activation('elu')(c3)
+    c3 = Activation(activation)(c3)
     c3 = Conv2D(16*n, (3, 3), padding='same', kernel_initializer='he_normal')(c3)
 
     c3 = Add()([c3, X_shortcut])
@@ -366,11 +366,11 @@ def ResUnetBasic(train_generator, valid_generator, weights , class_0_w , class_1
     # X_shortcut = BatchNormalization()(X_shortcut)
 
     c4 = BatchNormalization()(p3)
-    c4 = Activation('elu')(c4)
+    c4 = Activation(activation)(c4)
     c4 = Conv2D(32*n, (5, 5), padding='same',kernel_initializer='he_normal')(c4)
 
     c4 = BatchNormalization()(c4)
-    c4 = Activation('elu')(c4)
+    c4 = Activation(activation)(c4)
     c4 = Conv2D(32*n, (5, 5), padding='same',kernel_initializer='he_normal')(c4)
 
     c4 = Add()([c4, X_shortcut])
@@ -382,11 +382,11 @@ def ResUnetBasic(train_generator, valid_generator, weights , class_0_w , class_1
 
     # u6 = Conv2D(16*n, (1, 1), padding='same', kernel_initializer='he_normal')(u6)
     c5 = BatchNormalization()(u5)
-    c5 = Activation('elu')(c5)
+    c5 = Activation(activation)(c5)
     c5 = Conv2D(16*n, (3, 3), padding='same', kernel_initializer='he_normal')(c5)
 
     c5 = BatchNormalization()(c5)
-    c5 = Activation('elu')(c5)
+    c5 = Activation(activation)(c5)
     c5 = Conv2D(16*n, (3, 3), padding='same', kernel_initializer='he_normal')(c5)
 
     c5 = Add()([c5, X_shortcut])
@@ -398,11 +398,11 @@ def ResUnetBasic(train_generator, valid_generator, weights , class_0_w , class_1
     # u7 = Conv2D(8*n, (1, 1), padding='same', kernel_initializer='he_normal')(u7)
 
     c6 = BatchNormalization()(u6)
-    c6 = Activation('elu')(c6)
+    c6 = Activation(activation)(c6)
     c6 = Conv2D(8*n, (3, 3), padding='same',kernel_initializer='he_normal')(c6)
 
     c6 = BatchNormalization()(c6)
-    c6 = Activation('elu')(c6)
+    c6 = Activation(activation)(c6)
     c6 = Conv2D(8*n, (3, 3), padding='same',kernel_initializer='he_normal')(c6)
 
     c6 = Add()([c6, X_shortcut])
@@ -413,11 +413,11 @@ def ResUnetBasic(train_generator, valid_generator, weights , class_0_w , class_1
     # u8 = Conv2D(4*n, (1, 1), padding='same', kernel_initializer='he_normal')(u8
 
     c7 = BatchNormalization()(u7)
-    c7 = Activation('elu')(c7)
+    c7 = Activation(activation)(c7)
     c7 = Conv2D(4*n, (3, 3), padding='same',kernel_initializer='he_normal')(c7)
 
     c7 = BatchNormalization()(c7)
-    c7 = Activation('elu')(c7)
+    c7 = Activation(activation)(c7)
     c7 = Conv2D(4*n, (3, 3), padding='same',kernel_initializer='he_normal')(c7)
 
     c7 = Add()([c7, X_shortcut])
@@ -708,6 +708,8 @@ if __name__ == "__main__":
     parser.add_argument('--images', nargs="?", default = AugCropImages, help='path including images for training')
     parser.add_argument('--masks', nargs="?", default = AugCropMasks, help='path including masks for training')
     parser.add_argument('--model_name',type=str, default = 'ResUnet',  help='model name')
+    parser.add_argument('--activation',type=str, default = 'elu',  help='activation')
+
     parser.add_argument('--model_results', nargs="?", default = ModelResults, help='path where to save the models')
     parser.add_argument('--compiler', nargs="?",type = str, default = 'Adam', help='Adam or SGD')
     parser.add_argument("--gpus", type=int, default=1, help="# of GPUs to use for training")
@@ -789,7 +791,7 @@ if __name__ == "__main__":
     if 'resunetbasic' in args.model_name.lower():
         print('ResUnetbasic')
         ResUnetBasic(train_generator,valid_generator, weights = args.weights, class_0_w = args.class_weights[0]
-                , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n,
+                , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n, activation,
                 compiler = args.compiler, gpus = args.gpus, cluster=cluster)
 
     elif 'unetoriginal' in args.model_name.lower(): #n should be 8
@@ -808,5 +810,5 @@ if __name__ == "__main__":
     else:
         print('ResUnet')
         ResUnet(train_generator,valid_generator, weights = args.weights, class_0_w = args.class_weights[0]
-                , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n,
+                , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n, activation = args.activation,
                 compiler = args.compiler, gpus = args.gpus, cluster=cluster)
