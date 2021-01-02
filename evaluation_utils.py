@@ -1,20 +1,32 @@
 #TODO: check imports and function definitions to exclude the ones that are no longer relevant
 
-
 import argparse
 parser = argparse.ArgumentParser(description='Run evaluation pipeline for specified model name')
 parser.add_argument('model_name', metavar='name', type=str,  default="ResUnet", # nargs='+',
-	            help='Name(s) of the model(s) to evaluate.')
-parser.add_argument('--out_folder', metavar='folder', type=str,  default="results",
-	            help='Output folder.')	
+                    help='Name of the model to evaluate.')
+parser.add_argument('--out_folder', metavar='folder', type=str,  default="results", 
+                    help='Output folder')
+parser.add_argument('--mode', metavar='mode', type=str,  default="eval", 
+                    help="""Running mode. Valid values:
+                            - eval (default) --> optimise threshold (train_val folder, full size images)                            
+                            - test --> validate on test images (test folder, full size images)                     
+                            - test_code --> for testing changes in the code
+                            """)
 args = parser.parse_args()
 
 from pathlib import Path
 
 # setup paths --> NOTE: CURRENT PATHS ARE TO BE UPDATED
 repo_path = Path("/home/luca/PycharmProjects/cell_counting_yellow")
-TRAIN_IMG_PATH = repo_path / "DATASET/OLD/sample_valid/images"
-TRAIN_MASKS_PATH = repo_path / "DATASET/OLD/sample_valid/masks"
+if args.mode == "eval":
+    IMG_PATH = repo_path / "DATASET/train_val/full_size/images"
+    MASKS_PATH = repo_path / "DATASET/train_val/full_size/masks"
+elif args.mode == "test":
+    IMG_PATH = repo_path / "DATASET/test/all_images/images"
+    MASKS_PATH = repo_path / "DATASET/test/all_masks/masks"
+else:
+    IMG_PATH = repo_path / "DATASET/test_tr_opt/sample_valid/images"
+    MASKS_PATH = repo_path / "DATASET/test_tr_opt/sample_valid/masks"
 
 # define auxiliary functions --> NOTE: TO CHECK REDUNDANCY WITH OTHER UTILS SCRIPTS
 
@@ -54,11 +66,11 @@ def create_weighted_binary_crossentropy(zero_weight, one_weight):
     return weighted_binary_crossentropy
     
 ### Post-processing utils
-def mask_post_processing(thresh_image, area_threshold=600, min_obj_size=200, max_dist=30):
+def mask_post_processing(thresh_image, area_threshold=600, min_obj_size=200, max_dist=30, foot=40):
 
     # Find object in predicted image
     labels_pred, nlabels_pred = ndimage.label(thresh_image)
-    processed = remove_small_holes(labels_pred, area_threshold=area_threshold, connectivity=8,
+    processed = remove_small_holes(labels_pred, area_threshold=area_threshold, connectivity=1,
                                    in_place=False)
     processed = remove_small_objects(
         processed, min_size=min_obj_size, connectivity=1, in_place=False)
@@ -67,7 +79,7 @@ def mask_post_processing(thresh_image, area_threshold=600, min_obj_size=200, max
     distance = ndimage.distance_transform_edt(processed)
 
     maxi = ndimage.maximum_filter(distance, size=max_dist, mode='constant')
-    local_maxi = peak_local_max(maxi, indices=False, footprint=np.ones((40, 40)),
+    local_maxi = peak_local_max(maxi, indices=False, footprint=np.ones((foot, foot)),
                                 exclude_border=False,
                                 labels=labels_bool)
 
@@ -208,7 +220,10 @@ if __name__ == "__main__":
 	model_path = "{}/model_results/{}".format(repo_path, model_name)
 	save_path = repo_path / args.out_folder
 	save_path.mkdir(parents=True, exist_ok=True)
-#	print(model_path, save_path)
+	save_path.chmod(16886) # chmod 776
+	print("\nReading images from: {}".format(str(IMG_PATH)))
+	print("Output folder set to: {}\n".format(str(save_path)))
+	
 	WeightedLoss = create_weighted_binary_crossentropy(1, 1.5)
 	model = load_model(model_path, custom_objects={'mean_iou': mean_iou, 'dice_coef': dice_coef, 
 			                                    'weighted_binary_crossentropy': WeightedLoss}, compile=False)      
@@ -221,8 +236,8 @@ if __name__ == "__main__":
 		validation_metrics_rgb = pd.DataFrame(
 		columns=["TP", "FP", "FN", "Target_count", "Predicted_count"])
 		# loop on training images
-		for _, img_path in enumerate(TRAIN_IMG_PATH.iterdir()):
-			mask_path = TRAIN_MASKS_PATH / img_path.name
+		for _, img_path in enumerate(IMG_PATH.iterdir()):
+			mask_path = MASKS_PATH / img_path.name
 
 			# compute predicted mask and read original mask
 			img = cv2.imread(str(img_path), cv2.IMREAD_COLOR)
