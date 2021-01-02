@@ -5,8 +5,12 @@
 DATASET/*
 __pycache__/*
 model_results/
+
 # exclude notebook checkpoints
 .ipynb_checkpoints
 
-# esclude results folder
+# exclude results folder
 results/*
+
+# exclude models
+model_results
