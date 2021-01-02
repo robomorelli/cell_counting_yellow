@@ -12,9 +12,11 @@ args = parser.parse_args()
 from pathlib import Path
 
 # setup paths --> NOTE: CURRENT PATHS ARE TO BE UPDATED
-repo_path = Path("/home/luca/PycharmProjects/cell_counting_yellow")
-TRAIN_IMG_PATH = repo_path / "DATASET/OLD/sample_valid/images"
-TRAIN_MASKS_PATH = repo_path / "DATASET/OLD/sample_valid/masks"
+#repo_path = Path("/home/luca/PycharmProjects/cell_counting_yellow")
+repo_path = Path("/storage/gpfs_maestro/hpc/user/rmorellihpc/cell_counting_yellow")
+
+TRAIN_IMG_PATH = repo_path / "DATASET/new_images/images"
+TRAIN_MASKS_PATH = repo_path / "DATASET/new_masks/masks"
 
 # define auxiliary functions --> NOTE: TO CHECK REDUNDANCY WITH OTHER UTILS SCRIPTS
 
