@@ -210,6 +210,8 @@ if __name__ == "__main__":
 
 	from tqdm import tqdm
 	import cv2
+	import matplotlib
+	matplotlib.use('Agg')
 	from matplotlib import pyplot as plt
 
 	from keras.models import load_model, Model, Sequential
@@ -245,7 +247,6 @@ if __name__ == "__main__":
 			pred_mask_rgb = make_UNet_prediction(
 			    img_path, threshold, model)
 			mask = cv2.imread(str(mask_path), cv2.IMREAD_GRAYSCALE)
-			print(img, mask)
 			compute_metrics(pred_mask_rgb, mask,
 					validation_metrics_rgb, img_path.name)
 		metrics_df_validation_rgb.loc[threshold] = F1Score(validation_metrics_rgb)
