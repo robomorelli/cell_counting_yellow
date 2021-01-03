@@ -1,34 +1,15 @@
-#TODO: check imports and function definitions to exclude the ones that are no longer relevant
-
-import argparse
-parser = argparse.ArgumentParser(description='Run evaluation pipeline for specified model name')
-parser.add_argument('model_name', metavar='name', type=str,  default="ResUnet", # nargs='+',
-                    help='Name of the model to evaluate.')
-parser.add_argument('--out_folder', metavar='folder', type=str,  default="results", 
-                    help='Output folder')
-parser.add_argument('--mode', metavar='mode', type=str,  default="eval", 
-                    help="""Running mode. Valid values:
-                            - eval (default) --> optimise threshold (train_val folder, full size images)                            
-                            - test --> validate on test images (test folder, full size images)                     
-                            - test_code --> for testing changes in the code
-                            """)
-args = parser.parse_args()
-
-from pathlib import Path
-
-# setup paths --> NOTE: CURRENT PATHS ARE TO BE UPDATED
-repo_path = Path("/storage/gpfs_maestro/hpc/user/rmorellihpc/cell_counting_yellow")
-if args.mode == "eval":
-    IMG_PATH = repo_path / "DATASET/train_val/full_size/images"
-    MASKS_PATH = repo_path / "DATASET/train_val/full_size/masks"
-elif args.mode == "test":
-    IMG_PATH = repo_path / "DATASET/test/all_images/images"
-    MASKS_PATH = repo_path / "DATASET/test/all_masks/masks"
-else:
-    IMG_PATH = repo_path / "DATASET/test_tr_opt/sample_valid/images"
-    MASKS_PATH = repo_path / "DATASET/test_tr_opt/sample_valid/masks"
-
 # define auxiliary functions --> NOTE: TO CHECK REDUNDANCY WITH OTHER UTILS SCRIPTS
+from skimage.feature import peak_local_max
+from skimage.morphology import remove_small_holes, remove_small_objects, label
+from skimage.segmentation import watershed
+from scipy import ndimage
+from math import hypot
+import numpy as np
+
+import cv2
+
+from keras import backend as K
+import tensorflow as tf
 
 ### Model utils
 def mean_iou(y_true, y_pred):
@@ -186,8 +167,12 @@ def F1Score(metrics):
     return(F1_score, MAE, MedAE, MPE, accuracy, precision, recall)  
     
 ### Plotting utils
-def plot_thresh_opt(df, save_path=None):
-    line = df.plot(y="F1", linewidth=2, markersize=6, legend=False), 
+def plot_thresh_opt(df, model_name, save_path=None):
+    import matplotlib
+    matplotlib.use('Agg')
+    from matplotlib import pyplot as plt
+
+    line = df.plot(y="F1", linewidth=2, markersize=6, legend=False),
     line = plt.title('$F_1$ score: threshold optimization', size =18, weight='bold')
     line = plt.ylabel('$F_1$ score', size=15)
     line = plt.xlabel('Threshold', size=15 )
@@ -195,67 +180,4 @@ def plot_thresh_opt(df, save_path=None):
     if save_path:
         outname = save_path / 'f1_score_thresh_opt_{}.png'.format(model_name[:-3])
         _ = plt.savefig(outname, dpi = 900, bbox_inches='tight' )
-    return line  
-    
-if __name__ == "__main__":
-
-	from skimage.feature import peak_local_max
-	from skimage.morphology import remove_small_holes, remove_small_objects, label
-	from skimage.segmentation import watershed
-	from skimage.filters import sobel
-	from scipy import ndimage
-	from math import hypot
-	import pandas as pd
-	import numpy as np
-
-	from tqdm import tqdm
-	import cv2
-	import matplotlib
-	matplotlib.use('Agg')
-	from matplotlib import pyplot as plt
-
-	from keras.models import load_model, Model, Sequential
-	from keras import backend as K
-	import tensorflow as tf
-
-	model_name = "{}.h5".format(args.model_name)
-	model_path = "{}/model_results/{}".format(repo_path, model_name)
-	save_path = repo_path / args.out_folder
-	save_path.mkdir(parents=True, exist_ok=True)
-	save_path.chmod(16886) # chmod 776
-	print("#"*40)
-	print("\nReading images from: {}".format(str(IMG_PATH)))
-	print("Output folder set to: {}\n".format(str(save_path)))
-	
-	print("#"*40)
-	print(f"\nModel: {model_name}\n\n")
-	WeightedLoss = create_weighted_binary_crossentropy(1, 1.5)
-	model = load_model(model_path, custom_objects={'mean_iou': mean_iou, 'dice_coef': dice_coef, 
-			                                    'weighted_binary_crossentropy': WeightedLoss})#, compile=False)      
-	threshold_seq = np.arange(start=0.5, stop=1, step=0.1)
-	metrics_df_validation_rgb = pd.DataFrame(None, columns=["F1", "MAE", "MedAE", "MPE", "accuracy",
-			                                        "precision", "recall"])
-
-	for _, threshold in tqdm(enumerate(threshold_seq), total=len(threshold_seq)):
-
-		print(f"Running for threshold: {threshold}")
-		# create dataframes for storing performance measures
-		validation_metrics_rgb = pd.DataFrame(
-		columns=["TP", "FP", "FN", "Target_count", "Predicted_count"])
-		# loop on training images
-		for _, img_path in enumerate(IMG_PATH.iterdir()):
-			mask_path = MASKS_PATH / img_path.name
-
-			# compute predicted mask and read original mask
-			img = cv2.imread(str(img_path), cv2.IMREAD_COLOR)
-
-			pred_mask_rgb = make_UNet_prediction(
-			    img_path, threshold, model)
-			mask = cv2.imread(str(mask_path), cv2.IMREAD_GRAYSCALE)
-			compute_metrics(pred_mask_rgb, mask,
-					validation_metrics_rgb, img_path.name)
-		metrics_df_validation_rgb.loc[threshold] = F1Score(validation_metrics_rgb)
-	outname = save_path / 'metrics_{}.csv'.format(model_name[:-3])
-	metrics_df_validation_rgb.to_csv(outname, index = True, index_label='Threshold')
-	_ = plot_thresh_opt(metrics_df_validation_rgb, save_path)
-
+    return line
