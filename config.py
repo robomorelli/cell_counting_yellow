@@ -45,8 +45,8 @@ NewImages = root + 'DATASET/new_images/images/'
 NewMasks = root + 'DATASET/new_masks/masks/'
 
 
-NewTestImages = root + 'DATASET/new_test/images/'
-NewTestsMasks = root + 'DATASET/new_test/masks/'
+NewTestImages = root + 'DATASET/new_test/all_images/images/'
+NewTestsMasks = root + 'DATASET/new_test/all_masks/masks/'
 
 # if not os.path.exists(NewImages):
 #     os.makedirs(NewImages)
