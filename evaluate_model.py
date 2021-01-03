@@ -50,16 +50,17 @@ if __name__ == "__main__":
     save_path = repo_path / args.out_folder / args.mode
     save_path.mkdir(parents=True, exist_ok=True)
     save_path.chmod(16886)  # chmod 776
-    print("#" * 40)
-    print("\nReading images from: {}".format(str(IMG_PATH)))
+    text = "\nReading images from: {}".format(str(IMG_PATH))
+    print("#" * len(text))
+    print(text)
     print("Output folder set to: {}\n".format(str(save_path)))
 
-    print("#" * 40)
+    print("#" * len(text))
     print(f"\nModel: {model_name}\n\n")
     WeightedLoss = create_weighted_binary_crossentropy(1, 1.5)
     model = load_model(model_path, custom_objects={'mean_iou': mean_iou, 'dice_coef': dice_coef,
                                                    'weighted_binary_crossentropy': WeightedLoss})  # , compile=False)
-    threshold_seq = np.arange(start=0.5, stop=0.7, step=0.1)
+    threshold_seq = np.arange(start=0.5, stop=1, step=0.1)
     metrics_df_validation_rgb = pd.DataFrame(None, columns=["F1", "MAE", "MedAE", "MPE", "accuracy",
                                                             "precision", "recall"])
 
