@@ -60,6 +60,20 @@ if __name__ == "__main__":
     WeightedLoss = create_weighted_binary_crossentropy(1, 1.5)
     model = load_model(model_path, custom_objects={'mean_iou': mean_iou, 'dice_coef': dice_coef,
                                                    'weighted_binary_crossentropy': WeightedLoss})  # , compile=False)
+
+    # predict with generator
+    from keras.preprocessing.image import ImageDataGenerator
+    image_datagen = ImageDataGenerator(rescale=1. / 255)
+
+    IMG_HEIGHT = 1200
+    IMG_WIDTH = 1600
+    BATCH_SIZE = 3
+    image_generator = image_datagen.flow_from_directory(IMG_PATH.parent,
+                                                        target_size=(IMG_HEIGHT, IMG_WIDTH), batch_size=BATCH_SIZE,
+                                                        color_mode="rgb", class_mode=None, shuffle=False)
+    filenames = image_generator.filenames
+    nb_samples = len(filenames)
+    predict = model.predict_generator(image_generator, steps=np.ceil(nb_samples / BATCH_SIZE))
     threshold_seq = np.arange(start=0.5, stop=1, step=0.1)
     metrics_df_validation_rgb = pd.DataFrame(None, columns=["F1", "MAE", "MedAE", "MPE", "accuracy",
                                                             "precision", "recall"])
@@ -70,18 +84,13 @@ if __name__ == "__main__":
         # create dataframes for storing performance measures
         validation_metrics_rgb = pd.DataFrame(
             columns=["TP", "FP", "FN", "Target_count", "Predicted_count"])
-        # loop on training images
-        for _, img_path in enumerate(IMG_PATH.iterdir()):
-            mask_path = MASKS_PATH / img_path.name
-
-            # compute predicted mask and read original mask
-            img = cv2.imread(str(img_path), cv2.IMREAD_COLOR)
-
-            pred_mask_rgb = predict_mask_from_img(
-                img_path, threshold, model)
+        # loop on masks
+        for idx, img_path in enumerate(filenames):
+            mask_path = MASKS_PATH / img_path.split("/")[1]
+            pred_mask_rgb = predict_mask_from_map(predict[idx], threshold)
             mask = cv2.imread(str(mask_path), cv2.IMREAD_GRAYSCALE)
             compute_metrics(pred_mask_rgb, mask,
-                            validation_metrics_rgb, img_path.name)
+                            validation_metrics_rgb, img_path.split("/")[1])
         metrics_df_validation_rgb.loc[threshold] = F1Score(validation_metrics_rgb)
     outname = save_path / 'metrics_{}.csv'.format(model_name[:-3])
     metrics_df_validation_rgb.to_csv(outname, index=True, index_label='Threshold')
