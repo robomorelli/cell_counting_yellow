@@ -40,7 +40,7 @@ def plot_predicted_heatmaps(model, test_img_path, test_masks_path):
    
     Return: None.
     '''
-    
+    # counter = 0
     for idx, img_path in enumerate(test_img_path.iterdir()):
     
         if not img_path.name.startswith("aug_"):
@@ -72,6 +72,9 @@ def plot_predicted_heatmaps(model, test_img_path, test_masks_path):
             cax = divider.append_axes("right", size="5%", pad=0.05)
             plt.colorbar(im, cax=cax)
             axes[1].set_title('Predicted heatmap RGB')
+            # counter += 1
+            # if counter==30:
+            #     break
 
 def plot_predicted_mask(model, test_img_path, test_masks_path, threshold, post_processing=True):
     '''Plot original image with true objects and the predicted heatmap.
@@ -83,7 +86,7 @@ def plot_predicted_mask(model, test_img_path, test_masks_path, threshold, post_p
     
     Return: None.
     '''
-    
+    # counter = 0
     for idx, img_path in enumerate(test_img_path.iterdir()):
     
         if not img_path.name.startswith("aug_"):
@@ -104,6 +107,9 @@ def plot_predicted_mask(model, test_img_path, test_masks_path, threshold, post_p
             
             plot_predictions_with_metrics(np.squeeze(img_rgb), img_path.name, 
                                           thresh_image, mask)
+            # counter +=1
+            # if counter==30:
+            #     break
 
     return(None)
     
@@ -193,7 +199,7 @@ def plot_predictions_with_metrics(img, img_name, pred_mask, mask):
     ae = abs(true_count - pred_rgb)
 
     # plot
-    legend_background_color = 'steelblue'
+    legend_background_color = 'white'
     line_thickness = 1.5
     plt.figure(figsize=(12, 12))
     plt.suptitle(img_name)
@@ -207,13 +213,13 @@ def plot_predictions_with_metrics(img, img_name, pred_mask, mask):
                             edgecolor="blue", linewidth=line_thickness)
     ae_patch = mpatches.Circle((0.1, 0.1), 0, facecolor=legend_background_color,
                             edgecolor=legend_background_color, linewidth=line_thickness)
-    plt.title("Predicted count: {} - True count: {}".format(pred_rgb, true_count))
+    plt.title("Predicted count: {} - True count: {}".format(pred_rgb, true_count), fontsize=18)
 
 
-    legend = plt.legend([tp_patch, fp_patch, fn_patch, ae_patch], 
+    legend = plt.legend([tp_patch, fp_patch, fn_patch, ae_patch],
                         ["True Positive: {}".format(tp), "False Positive: {}".format(fp),
                          "False Negative: {}".format(fn), "Absolute Error: {}".format(ae)], 
-                        bbox_to_anchor=(-0.24, 0.55), loc=2)
+                        bbox_to_anchor=(0.5, -0.15), loc='lower center', ncol=4,  fontsize=14)
     frame = legend.get_frame()
     frame.set_color(legend_background_color)
     plt.show()
