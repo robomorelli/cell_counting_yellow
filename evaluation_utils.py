@@ -90,7 +90,7 @@ def predict_mask_from_img(img_path, threshold, model, colorspace="rgb"):
     return(thresh_image)
 
 
-def predict_mask(predicted_map, threshold):
+def predict_mask_from_map(predicted_map, threshold):
 
     # threshold the predicted heatmap
     thresh_image = np.squeeze((predicted_map > threshold).astype('uint8'))
