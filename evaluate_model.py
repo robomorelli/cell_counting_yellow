@@ -19,7 +19,7 @@ from pathlib import Path
 
 # setup paths --> NOTE: CURRENT PATHS ARE TO BE UPDATED
 repo_path = Path("/storage/gpfs_maestro/hpc/user/rmorellihpc/cell_counting_yellow")
-# repo_path = Path("/home/luca/PycharmProjects/cell_counting_yellow")
+repo_path = Path("/home/luca/PycharmProjects/cell_counting_yellow")
 if args.mode == "eval":
     IMG_PATH = repo_path / "DATASET/train_val/full_size/images"
     MASKS_PATH = repo_path / "DATASET/train_val/full_size/masks"
@@ -77,7 +77,7 @@ if __name__ == "__main__":
             # compute predicted mask and read original mask
             img = cv2.imread(str(img_path), cv2.IMREAD_COLOR)
 
-            pred_mask_rgb = make_UNet_prediction(
+            pred_mask_rgb = predict_map(
                 img_path, threshold, model)
             mask = cv2.imread(str(mask_path), cv2.IMREAD_GRAYSCALE)
             compute_metrics(pred_mask_rgb, mask,

@@ -73,7 +73,7 @@ def mask_post_processing(thresh_image, area_threshold=600, min_obj_size=200, max
     return(labels.astype("uint8")*255)
 
 ### Evaluation utils
-def make_UNet_prediction(img_path, threshold, model, colorspace="rgb"):
+def predict_map(img_path, threshold, model, colorspace="rgb"):
 
     # read input image
     img = cv2.imread(str(img_path), cv2.IMREAD_COLOR)
