@@ -1,12 +1,15 @@
 # TODO: check imports and function definitions to exclude the ones that are no longer relevant
 
 import argparse
+from config import IMG_HEIGHT, IMG_WIDTH, TrainValImages, TrainValMasks, TestImages, TestMasks
 
 parser = argparse.ArgumentParser(description='Run evaluation pipeline for specified model name')
 parser.add_argument('model_name', metavar='name', type=str, default="ResUnet",  # nargs='+',
                     help='Name of the model to evaluate.')
 parser.add_argument('--out_folder', metavar='folder', type=str, default="results",
                     help='Output folder')
+parser.add_argument('--batch_size', metavar='batch_size', type=int, default=2,
+                    help='Batch size for generator used for predictions')
 parser.add_argument('--mode', metavar='mode', type=str, default="eval",
                     help="""Running mode. Valid values:
                             - eval (default) --> optimise threshold (train_val folder, full size images)                            
@@ -21,17 +24,16 @@ from pathlib import Path
 repo_path = Path("/storage/gpfs_maestro/hpc/user/rmorellihpc/cell_counting_yellow")
 # repo_path = Path("/home/luca/PycharmProjects/cell_counting_yellow")
 if args.mode == "eval":
-    IMG_PATH = repo_path / "DATASET/train_val/full_size/all_images/images"
-    MASKS_PATH = repo_path / "DATASET/train_val/full_size/all_masks/masks"
+    IMG_PATH = Path(TrainValImages) #repo_path / "DATASET/train_val/full_size/all_images/images"
+    MASKS_PATH = Path(TrainValMasks)#repo_path / "DATASET/train_val/full_size/all_masks/masks"
 elif args.mode == "test":
-    IMG_PATH = repo_path / "DATASET/test/all_images/all_images/images"
-    MASKS_PATH = repo_path / "DATASET/test/all_masks/all_masks/masks"
+    IMG_PATH = Path(TestImages)#repo_path / "DATASET/test/all_images/all_images/images"
+    MASKS_PATH = Path(TestMasks)#repo_path / "DATASET/test/all_masks/all_masks/masks"
 else:
     IMG_PATH = repo_path / "DATASET/test_tr_opt/sample_valid/all_images/images"
-    MASKS_PATH = repo_path / "DATASET/test_tr_opt/sample_valid/all_images/masks"
+    MASKS_PATH = repo_path / "DATASET/test_tr_opt/sample_valid/all_masks/masks"
 
 if __name__ == "__main__":
-
     from skimage.segmentation import watershed
     from math import hypot
     import pandas as pd
@@ -39,8 +41,6 @@ if __name__ == "__main__":
 
     from tqdm import tqdm
     import cv2
-    # import matplotlib
-    # matplotlib.use('Agg')
 
     from keras.models import load_model
     from evaluation_utils import *
@@ -65,15 +65,12 @@ if __name__ == "__main__":
     from keras.preprocessing.image import ImageDataGenerator
     image_datagen = ImageDataGenerator(rescale=1. / 255)
 
-    IMG_HEIGHT = 1200
-    IMG_WIDTH = 1600
-    BATCH_SIZE = 3
     image_generator = image_datagen.flow_from_directory(IMG_PATH.parent,
-                                                        target_size=(IMG_HEIGHT, IMG_WIDTH), batch_size=BATCH_SIZE,
+                                                        target_size=(IMG_HEIGHT, IMG_WIDTH), batch_size=args.batch_size,
                                                         color_mode="rgb", class_mode=None, shuffle=False)
     filenames = image_generator.filenames
     nb_samples = len(filenames)
-    predict = model.predict_generator(image_generator, steps=np.ceil(nb_samples / BATCH_SIZE))
+    predict = model.predict_generator(image_generator, steps=np.ceil(nb_samples / args.batch_size))
     threshold_seq = np.arange(start=0.5, stop=1, step=0.1)
     metrics_df_validation_rgb = pd.DataFrame(None, columns=["F1", "MAE", "MedAE", "MPE", "accuracy",
                                                             "precision", "recall"])
