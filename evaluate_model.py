@@ -60,7 +60,7 @@ if __name__ == "__main__":
     WeightedLoss = create_weighted_binary_crossentropy(1, 1.5)
     model = load_model(model_path, custom_objects={'mean_iou': mean_iou, 'dice_coef': dice_coef,
                                                    'weighted_binary_crossentropy': WeightedLoss})  # , compile=False)
-    threshold_seq = np.arange(start=0.5, stop=1, step=0.1)
+    threshold_seq = np.arange(start=0.5, stop=0.98, step=0.025)
     metrics_df_validation_rgb = pd.DataFrame(None, columns=["F1", "MAE", "MedAE", "MPE", "accuracy",
                                                             "precision", "recall"])
 
