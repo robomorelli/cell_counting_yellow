@@ -73,7 +73,7 @@ def mask_post_processing(thresh_image, area_threshold=600, min_obj_size=200, max
     return(labels.astype("uint8")*255)
 
 ### Evaluation utils
-def predict_map(img_path, threshold, model, colorspace="rgb"):
+def predict_mask_from_img(img_path, threshold, model, colorspace="rgb"):
 
     # read input image
     img = cv2.imread(str(img_path), cv2.IMREAD_COLOR)
@@ -88,6 +88,15 @@ def predict_map(img_path, threshold, model, colorspace="rgb"):
     thresh_image = mask_post_processing(thresh_image)
 
     return(thresh_image)
+
+
+def predict_mask(predicted_map, threshold):
+
+    # threshold the predicted heatmap
+    thresh_image = np.squeeze((predicted_map > threshold).astype('uint8'))
+    thresh_image = mask_post_processing(thresh_image)
+
+    return (thresh_image)
 
 
 def compute_metrics(pred_mask_binary, mask, metrics, img_name):

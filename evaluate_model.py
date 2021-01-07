@@ -77,7 +77,7 @@ if __name__ == "__main__":
             # compute predicted mask and read original mask
             img = cv2.imread(str(img_path), cv2.IMREAD_COLOR)
 
-            pred_mask_rgb = predict_map(
+            pred_mask_rgb = predict_mask_from_img(
                 img_path, threshold, model)
             mask = cv2.imread(str(mask_path), cv2.IMREAD_GRAYSCALE)
             compute_metrics(pred_mask_rgb, mask,
