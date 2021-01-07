@@ -19,16 +19,16 @@ from pathlib import Path
 
 # setup paths --> NOTE: CURRENT PATHS ARE TO BE UPDATED
 repo_path = Path("/storage/gpfs_maestro/hpc/user/rmorellihpc/cell_counting_yellow")
-repo_path = Path("/home/luca/PycharmProjects/cell_counting_yellow")
+# repo_path = Path("/home/luca/PycharmProjects/cell_counting_yellow")
 if args.mode == "eval":
-    IMG_PATH = repo_path / "DATASET/train_val/full_size/images"
-    MASKS_PATH = repo_path / "DATASET/train_val/full_size/masks"
+    IMG_PATH = repo_path / "DATASET/train_val/full_size/all_images/images"
+    MASKS_PATH = repo_path / "DATASET/train_val/full_size/all_masks/masks"
 elif args.mode == "test":
-    IMG_PATH = repo_path / "DATASET/test/all_images/images"
-    MASKS_PATH = repo_path / "DATASET/test/all_masks/masks"
+    IMG_PATH = repo_path / "DATASET/test/all_images/all_images/images"
+    MASKS_PATH = repo_path / "DATASET/test/all_masks/all_masks/masks"
 else:
-    IMG_PATH = repo_path / "DATASET/test_tr_opt/sample_valid/images"
-    MASKS_PATH = repo_path / "DATASET/test_tr_opt/sample_valid/masks"
+    IMG_PATH = repo_path / "DATASET/test_tr_opt/sample_valid/all_images/images"
+    MASKS_PATH = repo_path / "DATASET/test_tr_opt/sample_valid/all_images/masks"
 
 if __name__ == "__main__":
 

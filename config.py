@@ -66,8 +66,8 @@ if not os.path.exists(AllMasks):
     os.makedirs(AllMasks)
 
 #I'd like to change in this way
-TrainValImages = root + 'DATASET/train_val/full_size/images/'
-TrainValMasks = root + 'DATASET/train_val/full_size/masks/'
+TrainValImages = root + 'DATASET/train_val/full_size/all_images/images/'
+TrainValMasks = root + 'DATASET/train_val/full_size/all_masks/masks/'
 
 if not os.path.exists(TrainValImages):
     os.makedirs(TrainValImages)
