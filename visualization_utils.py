@@ -76,6 +76,60 @@ def plot_predicted_heatmaps(model, test_img_path, test_masks_path):
             # if counter==30:
             #     break
 
+
+def compare_heatmaps(models_dict, test_img_path, test_masks_path, threshold="best",
+                                     post_processing=True):
+    """Plot comparisons of all models in models_dict with bounding boxes for TP, FP, and FN.
+
+    :param models_dict: dictionary with structure {model name: model object}
+    :param test_img_path: path where original images are stored
+    :param test_masks_path: path where corresponding masks are stored
+    :param threshold: Cutoff for thresholding the prediction. values:
+                        - 'best' (default): it takes the best F1 threshold from eval metrics
+                        - float between 0 and 1.
+    :param post_processing: boolean for post-processing (default: True)
+    :return: None
+    """
+    from matplotlib import pyplot as plt
+    from pathlib import Path
+
+    # counter=0
+    for idx, img_path in enumerate(test_img_path.iterdir()):
+
+        if not img_path.name.startswith("aug_"):
+            # fig, axes = plt.subplots(int(np.ceil(len(models_dict) / 2)), 2, figsize=(20, 6))
+            fig, axes = plt.subplots(1, len(models_dict)+1, figsize=(20, 6))
+            # fig.suptitle(img_path.name, fontsize=22)
+            print("\033[31m" + img_path.name)
+
+            img_rgb = cv2.imread(str(img_path), cv2.IMREAD_COLOR)
+            img_rgb = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2RGB)
+            mask_path = test_masks_path / img_path.name
+            mask = cv2.imread(str(mask_path), cv2.IMREAD_GRAYSCALE)
+
+            # original image + true objects
+            axes[0].imshow(img_rgb, cmap=plt.cm.RdBu)
+            axes[0].contour(mask, [0.5], linewidths=1.2, colors='w')
+            axes[0].set_title('Original image and mask')
+
+            # predictions
+            img_rgb = np.expand_dims(img_rgb, 0)
+            for idx, model_item in enumerate(models_dict.items()):
+                model_name, model = model_item[0], model_item[1]
+
+                pred_mask_rgb = np.squeeze(model.predict(img_rgb / 255.))
+                im = axes[idx+1].pcolormesh(np.flipud(pred_mask_rgb), cmap='jet')
+                divider = make_axes_locatable(axes[idx+1])
+                cax = divider.append_axes("right", size="5%", pad=0.05)
+                plt.colorbar(im, cax=cax)
+                axes[idx+1].set_title(r"$\bf{{{}}}$".format(model_name))
+            plt.show()
+            # counter += 1
+            # if counter==5:
+            #     break
+    return (None)
+
+
 def plot_predicted_mask(model, test_img_path, test_masks_path, threshold, post_processing=True):
     '''Plot original image with true objects and the predicted heatmap.
     
