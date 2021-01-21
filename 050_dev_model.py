@@ -794,7 +794,7 @@ if __name__ == "__main__":
                 , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n, activation=args.activation,
                 compiler = args.compiler, gpus = args.gpus, cluster=cluster)
 
-    elif 'resunet' in args.model_name.lower(): :
+    elif 'resunet' in args.model_name.lower():
         print('ResUnet')
         ResUnet(train_generator,valid_generator, weights = args.weights, class_0_w = args.class_weights[0]
                 , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n, activation = args.activation,
