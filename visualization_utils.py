@@ -31,16 +31,18 @@ import matplotlib.patches as mpatches
 from scipy import ndimage
 
 
-def plot_predicted_heatmaps(model, test_img_path, test_masks_path):
+def plot_predicted_heatmaps(model, test_img_path, test_masks_path, head=None):
     '''Plot original image with true objects and the predicted heatmap.
     
     Keyword arguments:
+    model -- model object
     test_img_path -- path where the images to be plotted are stored
     test_masks_path -- path where the relative masks are stored
+    head -- either None or the number of plots to display
    
     Return: None.
     '''
-    # counter = 0
+    counter = 0
     for idx, img_path in enumerate(test_img_path.iterdir()):
     
         if not img_path.name.startswith("aug_"):
@@ -72,28 +74,24 @@ def plot_predicted_heatmaps(model, test_img_path, test_masks_path):
             cax = divider.append_axes("right", size="5%", pad=0.05)
             plt.colorbar(im, cax=cax)
             axes[1].set_title('Predicted heatmap RGB')
-            # counter += 1
-            # if counter==30:
-            #     break
+            counter += 1
+            if counter==head:
+                break
 
 
-def compare_heatmaps(models_dict, test_img_path, test_masks_path, threshold="best",
-                                     post_processing=True):
+def compare_heatmaps(models_dict, test_img_path, test_masks_path, head=None):
     """Plot comparisons of all models in models_dict with bounding boxes for TP, FP, and FN.
 
     :param models_dict: dictionary with structure {model name: model object}
     :param test_img_path: path where original images are stored
     :param test_masks_path: path where corresponding masks are stored
-    :param threshold: Cutoff for thresholding the prediction. values:
-                        - 'best' (default): it takes the best F1 threshold from eval metrics
-                        - float between 0 and 1.
-    :param post_processing: boolean for post-processing (default: True)
+    :param head: either None or the number of plots to display
+
     :return: None
     """
     from matplotlib import pyplot as plt
-    from pathlib import Path
 
-    # counter=0
+    counter=0
     for idx, img_path in enumerate(test_img_path.iterdir()):
 
         if not img_path.name.startswith("aug_"):
@@ -124,23 +122,25 @@ def compare_heatmaps(models_dict, test_img_path, test_masks_path, threshold="bes
                 plt.colorbar(im, cax=cax)
                 axes[idx+1].set_title(r"$\bf{{{}}}$".format(model_name))
             plt.show()
-            # counter += 1
-            # if counter==5:
-            #     break
+            counter += 1
+            if counter==head:
+                break
     return (None)
 
 
-def plot_predicted_mask(model, test_img_path, test_masks_path, threshold, post_processing=True):
+def plot_predicted_mask(model, test_img_path, test_masks_path, threshold, post_processing=True, head=None):
     '''Plot original image with true objects and the predicted heatmap.
     
     Keyword arguments:
+    model -- model object
     test_img_path -- path where the images to be plotted are stored
     test_masks_path -- path where the relative masks are stored
     threshold -- cutoff for thresholding predicted heatmap
+    head -- either None or the number of plots to display
     
     Return: None.
     '''
-    # counter = 0
+    counter = 0
     for idx, img_path in enumerate(test_img_path.iterdir()):
     
         if not img_path.name.startswith("aug_"):
@@ -161,9 +161,9 @@ def plot_predicted_mask(model, test_img_path, test_masks_path, threshold, post_p
             
             plot_predictions_with_metrics(np.squeeze(img_rgb), img_path.name, 
                                           thresh_image, mask)
-            # counter +=1
-            # if counter==30:
-            #     break
+            counter +=1
+            if counter==None:
+                break
 
     return(None)
 
@@ -248,7 +248,7 @@ def draw_bounding_boxes_with_metrics(img, pred_mask, mask):
 
 
 def compare_predictions_with_metrics(models_dict, test_img_path, test_masks_path, threshold="best",
-                                     post_processing=True):
+                                     post_processing=True, head=None):
     """Plot comparisons of all models in models_dict with bounding boxes for TP, FP, and FN.
 
     :param models_dict: dictionary with structure {model name: model object}
@@ -258,6 +258,7 @@ def compare_predictions_with_metrics(models_dict, test_img_path, test_masks_path
                         - 'best' (default): it takes the best F1 threshold from eval metrics
                         - float between 0 and 1.
     :param post_processing: boolean for post-processing (default: True)
+    :param head: either None or the number of plots to display
     :return: None
     """
     import pandas as pd
@@ -274,7 +275,7 @@ def compare_predictions_with_metrics(models_dict, test_img_path, test_masks_path
 
     legend_background_color = 'white'
     line_thickness = 1.5
-    # counter=0
+    counter=0
     for idx, img_path in enumerate(test_img_path.iterdir()):
 
         if not img_path.name.startswith("aug_"):
@@ -329,9 +330,9 @@ def compare_predictions_with_metrics(models_dict, test_img_path, test_masks_path
                 frame = legend.get_frame()
                 frame.set_color(legend_background_color)
             plt.show()
-            # counter +=1
-            # if counter==5:
-            #     break
+            counter +=1
+            if counter==head:
+                break
     return (None)
 
 
