@@ -3,6 +3,7 @@
 *.hdf5
 *.pdf
 *.zip
+*.tar
 DATASET/*
 __pycache__/*
 model_results/

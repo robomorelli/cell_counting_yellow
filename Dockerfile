@@ -14,7 +14,7 @@ RUN pip install -r requirements.txt
 #VOLUME vol
 
 # Declare Container Ports
-#EXPOSE 8000
+EXPOSE 8888
 
 # define Start-up Command, Entrypoint is null
 ENTRYPOINT ["/bin/bash"]
