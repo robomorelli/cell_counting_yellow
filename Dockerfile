@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . .
 
 # run command at build time
-#RUN pip install -r requirements.txt
+RUN pip install -r requirements.txt
 
 # Volume to map during the run process
 #VOLUME vol
