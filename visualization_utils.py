@@ -256,7 +256,7 @@ def compare_predictions_with_metrics(models_dict, test_img_path, test_masks_path
     :param test_masks_path: path where corresponding masks are stored
     :param threshold: Cutoff for thresholding the prediction. values:
                         - 'best' (default): it takes the best F1 threshold from eval metrics
-                        - float between 0 and 1.
+                        - list of float between 0 and 1, one per model in models_dict.
     :param post_processing: boolean for post-processing (default: True)
     :param head: either None or the number of plots to display
     :return: None
@@ -269,6 +269,7 @@ def compare_predictions_with_metrics(models_dict, test_img_path, test_masks_path
 
     import cv2
     import matplotlib.patches as mpatches
+    from kneed import KneeLocator
 
     # repo_path = Path("/storage/gpfs_maestro/hpc/user/rmorellihpc/cell_counting_yellow")
     repo_path = Path("/home/luca/PycharmProjects/cell_counting_yellow")
@@ -296,19 +297,22 @@ def compare_predictions_with_metrics(models_dict, test_img_path, test_masks_path
                 # predictions
                 img_rgb = np.expand_dims(img_rgb, 0)
                 pred_mask_rgb = np.squeeze(model.predict(img_rgb / 255.))
-                if type(threshold) != float:
+                if threshold == 'best':
                     opt_thresh_path = repo_path / "results/eval" / 'metrics_{}.csv'.format(model_name)
                     df = pd.read_csv(opt_thresh_path, index_col='Threshold')
-                    cur_threshold = df.F1.idxmax()
+                    x = df.index
+                    y = df.F1
+                    kn = KneeLocator(x, y, curve='concave', direction='decreasing')
+                    cur_threshold = kn.knee #df.F1.idxmax()
                 else:
-                    cur_threshold = threshold
+                    cur_threshold = threshold[idx]
                 thresh_image = np.squeeze((pred_mask_rgb > cur_threshold).astype('uint8'))
 
                 # apply post-processing
                 if post_processing:
                     thresh_image = mask_post_processing(thresh_image)
 
-                img, tp, fn, fp, ae, pred_rgb, true_count = draw_bounding_boxes_with_metrics(np.squeeze(img_rgb), thresh_image, mask)
+                img, tp, fp, fn, ae, pred_rgb, true_count = draw_bounding_boxes_with_metrics(np.squeeze(img_rgb), thresh_image, mask)
 
                 # plot
                 axes[idx].imshow(img, cmap=plt.cm.RdBu)
