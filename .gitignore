@@ -2,6 +2,7 @@
 *.h5
 *.hdf5
 *.pdf
+*.zip
 DATASET/*
 __pycache__/*
 model_results/
