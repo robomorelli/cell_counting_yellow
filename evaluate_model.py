@@ -75,15 +75,15 @@ if __name__ == "__main__":
     nb_samples = len(filenames)
     predict = model.predict_generator(image_generator, steps=np.ceil(nb_samples / args.batch_size))
 
-    if threshold == 'best':
-        opt_thresh_path = repo_path / "results/eval" / 'metrics_{}.csv'.format(model_name)
+    if args.threshold == 'best':
+        opt_thresh_path = repo_path / "results/eval" / 'metrics_{}.csv'.format(args.model_name)
         df = pd.read_csv(opt_thresh_path, index_col='Threshold')
         x = df.index
         y = df.F1
         kn = KneeLocator(x, y, curve='concave', direction='decreasing')
         threshold_seq = [kn.knee]  # df.F1.idxmax()
     else:
-        threshold_seq = np.arange(start=0.5, stop0.98, step=0.025)
+        threshold_seq = np.arange(start=0.5, stop=0.98, step=0.025)
 
     metrics_df_validation_rgb = pd.DataFrame(None, columns=["F1", "MAE", "MedAE", "MPE", "accuracy",
                                                             "precision", "recall"])
