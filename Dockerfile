@@ -8,13 +8,13 @@ WORKDIR /app
 COPY . .
 
 # run command at build time
-#RUN pip install -r requirements.txt
+RUN pip install -r requirements.txt
 
 # Volume to map during the run process
 #VOLUME vol
 
 # Declare Container Ports
-#EXPOSE 8000
+EXPOSE 8888
 
 # define Start-up Command, Entrypoint is null
 ENTRYPOINT ["/bin/bash"]
