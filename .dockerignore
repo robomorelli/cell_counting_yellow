@@ -1,0 +1,26 @@
+*.npy
+*.h5
+*.hdf5
+*.pdf
+*.zip
+*.tar
+DATASET/*
+__pycache__/*
+model_results/
+
+# exclude notebook checkpoints
+.ipynb_checkpoints
+
+# exclude results folder
+results/*
+
+# exclude models
+model_results
+
+# exclude run script
+evaluate_model.sh
+run_test_cmd.txt
+
+# exclude Pycharm virtual env
+.idea
+venv/

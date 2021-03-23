@@ -31,16 +31,18 @@ import matplotlib.patches as mpatches
 from scipy import ndimage
 
 
-def plot_predicted_heatmaps(model, test_img_path, test_masks_path):
+def plot_predicted_heatmaps(model, test_img_path, test_masks_path, head=None):
     '''Plot original image with true objects and the predicted heatmap.
     
     Keyword arguments:
+    model -- model object
     test_img_path -- path where the images to be plotted are stored
     test_masks_path -- path where the relative masks are stored
+    head -- either None or the number of plots to display
    
     Return: None.
     '''
-    # counter = 0
+    counter = 0
     for idx, img_path in enumerate(test_img_path.iterdir()):
     
         if not img_path.name.startswith("aug_"):
@@ -72,21 +74,73 @@ def plot_predicted_heatmaps(model, test_img_path, test_masks_path):
             cax = divider.append_axes("right", size="5%", pad=0.05)
             plt.colorbar(im, cax=cax)
             axes[1].set_title('Predicted heatmap RGB')
-            # counter += 1
-            # if counter==30:
-            #     break
+            counter += 1
+            if counter==head:
+                break
 
-def plot_predicted_mask(model, test_img_path, test_masks_path, threshold, post_processing=True):
+
+def compare_heatmaps(models_dict, test_img_path, test_masks_path, head=None):
+    """Plot comparisons of all models in models_dict with bounding boxes for TP, FP, and FN.
+
+    :param models_dict: dictionary with structure {model name: model object}
+    :param test_img_path: path where original images are stored
+    :param test_masks_path: path where corresponding masks are stored
+    :param head: either None or the number of plots to display
+
+    :return: None
+    """
+    from matplotlib import pyplot as plt
+
+    counter=0
+    for idx, img_path in enumerate(test_img_path.iterdir()):
+
+        if not img_path.name.startswith("aug_"):
+            # fig, axes = plt.subplots(int(np.ceil(len(models_dict) / 2)), 2, figsize=(20, 6))
+            fig, axes = plt.subplots(1, len(models_dict)+1, figsize=(20, 6))
+            # fig.suptitle(img_path.name, fontsize=22)
+            print("\033[31m" + img_path.name)
+
+            img_rgb = cv2.imread(str(img_path), cv2.IMREAD_COLOR)
+            img_rgb = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2RGB)
+            mask_path = test_masks_path / img_path.name
+            mask = cv2.imread(str(mask_path), cv2.IMREAD_GRAYSCALE)
+
+            # original image + true objects
+            axes[0].imshow(img_rgb, cmap=plt.cm.RdBu)
+            axes[0].contour(mask, [0.5], linewidths=1.2, colors='w')
+            axes[0].set_title('Original image and mask')
+
+            # predictions
+            img_rgb = np.expand_dims(img_rgb, 0)
+            for idx, model_item in enumerate(models_dict.items()):
+                model_name, model = model_item[0], model_item[1]
+
+                pred_mask_rgb = np.squeeze(model.predict(img_rgb / 255.))
+                im = axes[idx+1].pcolormesh(np.flipud(pred_mask_rgb), cmap='jet')
+                divider = make_axes_locatable(axes[idx+1])
+                cax = divider.append_axes("right", size="5%", pad=0.05)
+                plt.colorbar(im, cax=cax)
+                axes[idx+1].set_title(r"$\bf{{{}}}$".format(model_name))
+            plt.show()
+            counter += 1
+            if counter==head:
+                break
+    return (None)
+
+
+def plot_predicted_mask(model, test_img_path, test_masks_path, threshold, post_processing=True, head=None):
     '''Plot original image with true objects and the predicted heatmap.
     
     Keyword arguments:
+    model -- model object
     test_img_path -- path where the images to be plotted are stored
     test_masks_path -- path where the relative masks are stored
     threshold -- cutoff for thresholding predicted heatmap
+    head -- either None or the number of plots to display
     
     Return: None.
     '''
-    # counter = 0
+    counter = 0
     for idx, img_path in enumerate(test_img_path.iterdir()):
     
         if not img_path.name.startswith("aug_"):
@@ -107,12 +161,184 @@ def plot_predicted_mask(model, test_img_path, test_masks_path, threshold, post_p
             
             plot_predictions_with_metrics(np.squeeze(img_rgb), img_path.name, 
                                           thresh_image, mask)
-            # counter +=1
-            # if counter==30:
-            #     break
+            counter +=1
+            if counter==None:
+                break
 
     return(None)
-    
+
+
+def draw_bounding_boxes_with_metrics(img, pred_mask, mask):
+    '''Add bounding boxes for TP, FP, and FN to the original image.
+
+    Keyword arguments:
+    img -- array of the original image
+    pred_mask -- array of the predicted mask
+    mask -- groundtruth mask
+
+    Return: img, tp, fp, fn, ae, pred_rgb, true_count.
+    '''
+    pred_mask = pred_mask.astype("bool")
+    pred_label, pred_rgb = ndimage.label(pred_mask)
+    pred_objs = ndimage.find_objects(pred_label)
+
+    # extract target objects and counts
+    true_label, true_count = ndimage.label(mask)
+    true_objs = ndimage.find_objects(true_label)
+
+    # compute centers of predicted objects
+    pred_centers = []
+    for ob in pred_objs:
+        pred_centers.append(((int((ob[0].stop - ob[0].start) / 2) + ob[0].start),
+                             (int((ob[1].stop - ob[1].start) / 2) + ob[1].start)))
+
+    # compute centers of target objects
+    targ_center = []
+    for ob in true_objs:
+        targ_center.append(((int((ob[0].stop - ob[0].start) / 2) + ob[0].start),
+                            (int((ob[1].stop - ob[1].start) / 2) + ob[1].start)))
+
+    # associate matching objects, true positives
+    tp = 0
+    tp_objs = []
+
+    for pred_idx, pred_obj in enumerate(pred_objs):
+
+        min_dist = 31  # 1.5-cells distance is the maximum accepted
+        TP_flag = 0
+
+        for targ_idx, targ_obj in enumerate(true_objs):
+
+            dist = hypot(pred_centers[pred_idx][0] - targ_center[targ_idx][0],
+                         pred_centers[pred_idx][1] - targ_center[targ_idx][1])
+
+            if dist < min_dist:
+                TP_flag = 1
+                min_dist = dist
+                index_targ = targ_idx
+                index_pred = pred_idx
+
+        if TP_flag == 1:
+            tp += 1
+            TP_flag = 0
+
+            cv2.rectangle(img, (pred_objs[index_pred][1].start - 10, pred_objs[index_pred][0].start - 10),
+                          (pred_objs[index_pred][1].stop + 10, pred_objs[index_pred][0].stop + 10), (0, 255, 0), 3)
+
+            tp_objs.append(pred_objs[index_pred])
+            targ_center.pop(index_targ)
+            true_objs.pop(index_targ)
+
+    # derive false negatives and false positives
+    fp = 0
+    for pred_obj in pred_objs:
+        if pred_obj not in tp_objs:
+            cv2.rectangle(img, (pred_obj[1].start - 10, pred_obj[0].start - 10),
+                          (pred_obj[1].stop + 10, pred_obj[0].stop + 10), (255, 0, 0), 3)
+            fp += 1
+
+    fn = 0
+    for targ_obj in true_objs:
+        cv2.rectangle(img, (targ_obj[1].start - 10, targ_obj[0].start - 10),
+                      (targ_obj[1].stop + 10, targ_obj[0].stop + 10), (0, 0, 255), 3)
+        fn += 1
+
+    ae = abs(true_count - pred_rgb)
+    return (img, tp, fp, fn, ae, pred_rgb, true_count)
+
+
+def compare_predictions_with_metrics(models_dict, test_img_path, test_masks_path, threshold="best",
+                                     post_processing=True, head=None):
+    """Plot comparisons of all models in models_dict with bounding boxes for TP, FP, and FN.
+
+    :param models_dict: dictionary with structure {model name: model object}
+    :param test_img_path: path where original images are stored
+    :param test_masks_path: path where corresponding masks are stored
+    :param threshold: Cutoff for thresholding the prediction. values:
+                        - 'best' (default): it takes the best F1 threshold from eval metrics
+                        - list of float between 0 and 1, one per model in models_dict.
+    :param post_processing: boolean for post-processing (default: True)
+    :param head: either None or the number of plots to display
+    :return: None
+    """
+    import pandas as pd
+    import numpy as np
+    from matplotlib import pyplot as plt
+    from pathlib import Path
+    from evaluation_utils import mask_post_processing
+
+    import cv2
+    import matplotlib.patches as mpatches
+    from kneed import KneeLocator
+
+    # repo_path = Path("/storage/gpfs_maestro/hpc/user/rmorellihpc/cell_counting_yellow")
+    repo_path = Path("/home/luca/PycharmProjects/cell_counting_yellow")
+
+    legend_background_color = 'white'
+    line_thickness = 1.5
+    counter=0
+    for idx, img_path in enumerate(test_img_path.iterdir()):
+
+        if not img_path.name.startswith("aug_"):
+            # fig, axes = plt.subplots(int(np.ceil(len(models_dict) / 2)), 2, figsize=(20, 6))
+            fig, axes = plt.subplots(1,len(models_dict), figsize=(20, 6))
+            # fig.suptitle(img_path.name, fontsize=22)
+            print("\033[31m" + img_path.name)
+
+            mask_path = test_masks_path / img_path.name
+            mask = cv2.imread(str(mask_path), cv2.IMREAD_GRAYSCALE)
+
+            # predictions
+            for idx, model_item in enumerate(models_dict.items()):
+                model_name, model = model_item[0], model_item[1]
+                img_rgb = cv2.imread(str(img_path), cv2.IMREAD_COLOR)
+                img_rgb = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2RGB)
+
+                # predictions
+                img_rgb = np.expand_dims(img_rgb, 0)
+                pred_mask_rgb = np.squeeze(model.predict(img_rgb / 255.))
+                if threshold == 'best':
+                    opt_thresh_path = repo_path / "results/eval" / 'metrics_{}.csv'.format(model_name)
+                    df = pd.read_csv(opt_thresh_path, index_col='Threshold')
+                    x = df.index
+                    y = df.F1
+                    kn = KneeLocator(x, y, curve='concave', direction='decreasing')
+                    cur_threshold = kn.knee #df.F1.idxmax()
+                else:
+                    cur_threshold = threshold[idx]
+                thresh_image = np.squeeze((pred_mask_rgb > cur_threshold).astype('uint8'))
+
+                # apply post-processing
+                if post_processing:
+                    thresh_image = mask_post_processing(thresh_image)
+
+                img, tp, fp, fn, ae, pred_rgb, true_count = draw_bounding_boxes_with_metrics(np.squeeze(img_rgb), thresh_image, mask)
+
+                # plot
+                axes[idx].imshow(img, cmap=plt.cm.RdBu)
+                tp_patch = mpatches.Circle((0.1, 0.1), 0.25, facecolor=legend_background_color,
+                                           edgecolor="green", linewidth=line_thickness)
+                fp_patch = mpatches.Circle((0.1, 0.1), 0.25, facecolor=legend_background_color,
+                                           edgecolor="red", linewidth=line_thickness)
+                fn_patch = mpatches.Circle((0.1, 0.1), 0.25, facecolor=legend_background_color,
+                                           edgecolor="blue", linewidth=line_thickness)
+                ae_patch = mpatches.Circle((0.1, 0.1), 0, facecolor=legend_background_color,
+                                           edgecolor=legend_background_color, linewidth=line_thickness)
+                title = "Predicted count: {} - True count: {}\n".format(pred_rgb, true_count) + r"$\bf{{{}}}$".format(model_name)
+                axes[idx].set_title(title, fontsize=18)
+
+                legend = axes[idx].legend([tp_patch, fp_patch, fn_patch, ae_patch],
+                                          ["True Positive: {}".format(tp), "False Positive: {}".format(fp),
+                                           "False Negative: {}".format(fn), "Absolute Error: {}".format(ae)],
+                                          bbox_to_anchor=(0.5, -0.3), loc='lower center', ncol=2, fontsize=14)
+                frame = legend.get_frame()
+                frame.set_color(legend_background_color)
+            plt.show()
+            counter +=1
+            if counter==head:
+                break
+    return (None)
+
 
 def plot_predictions_with_metrics(img, img_name, pred_mask, mask):
     '''Plot original image with bounding boxes for TP, FP, and FN.
@@ -125,7 +351,7 @@ def plot_predictions_with_metrics(img, img_name, pred_mask, mask):
     
     Return: None.
     '''
-    
+
     pred_mask = pred_mask.astype("bool")
 
     pred_label, pred_rgb = ndimage.label(pred_mask)
@@ -134,7 +360,7 @@ def plot_predictions_with_metrics(img, img_name, pred_mask, mask):
     # read mask and extract target objects and counts
     true_label, true_count = ndimage.label(mask)
     true_objs = ndimage.find_objects(true_label)
-    
+
     # compute centers of predicted objects
     pred_centers = []
     for ob in pred_objs:
@@ -171,7 +397,7 @@ def plot_predictions_with_metrics(img, img_name, pred_mask, mask):
         if TP_flag == 1:
             tp += 1
             TP_flag = 0
-            
+
             cv2.rectangle(img,(pred_objs[index_pred][1].start-10,pred_objs[index_pred][0].start-10),
                           (pred_objs[index_pred][1].stop+10,pred_objs[index_pred][0].stop+10),(0,255,0),3)
 
@@ -224,8 +450,8 @@ def plot_predictions_with_metrics(img, img_name, pred_mask, mask):
     frame.set_color(legend_background_color)
     plt.show()
     return(None)
-    
-    
+
+
 def plot_MAE(test_metrics):
     '''Plot mean absolute error distribution based on pandas dataframe. Return None.'''
     
