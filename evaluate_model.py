@@ -16,6 +16,9 @@ parser.add_argument('--mode', metavar='mode', type=str, default="eval",
                             - test --> validate on test images (test folder, full size images)                     
                             - test_code --> for testing changes in the code
                             """)
+parser.add_argument('--threshold', metavar='threshold', type=str,  default='grid',
+                    help='Whether to use best threshold (i.e. optimized on the validation set) or grid of values')
+
 args = parser.parse_args()
 
 from pathlib import Path
@@ -44,6 +47,7 @@ if __name__ == "__main__":
 
     from keras.models import load_model
     from evaluation_utils import *
+    from kneed import KneeLocator
 
     model_name = "{}.h5".format(args.model_name)
     model_path = "{}/model_results/{}".format(repo_path, model_name)
@@ -71,7 +75,17 @@ if __name__ == "__main__":
     filenames = image_generator.filenames
     nb_samples = len(filenames)
     predict = model.predict_generator(image_generator, steps=np.ceil(nb_samples / args.batch_size))
-    threshold_seq = np.arange(start=0.5, stop=0.98, step=0.025)
+
+if threshold == 'best':
+        opt_thresh_path = repo_path / "results/eval" / 'metrics_{}.csv'.format(model_name)
+        df = pd.read_csv(opt_thresh_path, index_col='Threshold')
+        x = df.index
+        y = df.F1
+        kn = KneeLocator(x, y, curve='concave', direction='decreasing')
+        threshold_seq = [kn.knee]  # df.F1.idxmax()
+    else:
+        threshold_seq = np.arange(start=0.5, stop0.98, step=0.025)
+
     metrics_df_validation_rgb = pd.DataFrame(None, columns=["F1", "MAE", "MedAE", "MPE", "accuracy",
                                                             "precision", "recall"])
 
