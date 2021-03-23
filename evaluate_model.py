@@ -18,7 +18,6 @@ parser.add_argument('--mode', metavar='mode', type=str, default="eval",
                             """)
 parser.add_argument('--threshold', metavar='threshold', type=str,  default='grid',
                     help='Whether to use best threshold (i.e. optimized on the validation set) or grid of values')
-
 args = parser.parse_args()
 
 from pathlib import Path
@@ -76,7 +75,7 @@ if __name__ == "__main__":
     nb_samples = len(filenames)
     predict = model.predict_generator(image_generator, steps=np.ceil(nb_samples / args.batch_size))
 
-if threshold == 'best':
+    if threshold == 'best':
         opt_thresh_path = repo_path / "results/eval" / 'metrics_{}.csv'.format(model_name)
         df = pd.read_csv(opt_thresh_path, index_col='Threshold')
         x = df.index
