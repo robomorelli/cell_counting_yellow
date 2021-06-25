@@ -79,7 +79,7 @@ if __name__ == "__main__":
     df = pd.read_csv(opt_thresh_path, index_col='Threshold')
     if args.threshold == 'best':
         threshold_seq = [df.F1.idxmax()]
-    if args.threshold == 'knee':
+    elif args.threshold == 'knee':
         x = df.index
         y = df.F1
         kn = KneeLocator(x, y, curve='concave', direction='decreasing')
