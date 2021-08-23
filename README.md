@@ -1,5 +1,28 @@
 # cell_counting_yellow
-Starting point for cell_counting_yellow
+This is the code implementation of the work described here [link to paper: *Automatic Cell Counting in Flourescent Microscopy Using Deep Learning*](https://arxiv.org/abs/2103.01141)]
+
+# Data Overview
+The dataset used in the paper ...
+
+# How to use
+
+### Dependencies
+
+Check the requirements.txt file for the dependencies
+
+### Dataset
+
+You should copy zip of dataset (Fluorescent Neuronal Cells) inside the **main directory** of the repository
+
+Once the zip file is here:
+
+1. Create a folder named DATASET
+2. Move the Fluorescent_Neuronal_Cells.zip into the DATASET folder
+3. Unzip the Fluorescent_Neuronal_Cells.zip
+
+
+
+
 
 
 
