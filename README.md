@@ -57,7 +57,11 @@ masks of the paper.
   
 If you already run this script previusly take care to add  **--start_from_zero True** flag to remove the previous images in the destination folder
 
-
+5. **040_augumentation_yellow.py**: Augmentation process to increase the number of training-validation images. Use the help to define the augmentation factor both for the images segmented automatically and those segmented manually. Also define to adopt or not a strategy for the artifact augmentation. No additional argument aim to reproduce the augumentation pipeline described in the paper. It is worth to remember that the augumentation will produce different images from those used in the paper due to the random nature of the augmentation process.
+  
+If you already run this script previusly take care to add  **--start_from_zero True** flag to remove the previous images in the destination folder
+  
+6. **augmentation_utils.py**: Utils function used to manipulate the images during the augumentation process.
 
 
 DOCKER instruction
