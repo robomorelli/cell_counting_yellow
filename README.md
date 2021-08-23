@@ -78,7 +78,7 @@ If you already run this script previusly take care to add  **--start_from_zero T
   
 ### Training
 
-9. **050_dev_model.py**: Train a convolutional neural network on the Fluorescent Neuronal Cells dataset. Without additional arguments the ResUnet describer in the paper as c-Resunet.
+9. **050_dev_model.py**: Train a convolutional neural network on the Fluorescent Neuronal Cells dataset. Without additional arguments the ResUnet described in the paper as c-Resunet is trained. To train another architecture use the **--model_name** argument. Options are: [ResUnet, ResUnetBasic, Unet, UnetOriginal]. Check the help to modify other training parameters like the classes' loss weight. Default are 1.5 for white pixels (cell class) and 1 for black pixel (no cell class).
 
 DOCKER instruction
 
