@@ -43,23 +43,22 @@ python <script name> -h
   - Mask weighting
   - Images Augmentation
   
-3. **augmentation_utils.py**: Further utils function used to manipulate the images during the augumentation process.
+3. **augmentation_utils.py**: Further utils functions used to manipulate the images during the augumentation process.
 
 #### Preprocessing 
   
-4. **010_join_images.py**: Join the images and the relative masks coming from the automatic and the manual segmenation (see data description in the paper [link to paper:](https://arxiv.org/abs/2103.01141)]) into one unique folder: /DATASET/all_images/images for the images and /DATASET/all_masks/masks for the masks. This script also correct the masks images with more than two grayscales values (0 for the background and 255 for the pixels of the cells).
+4. **010_join_images.py**: Join the images and the relative masks coming from the automatic and the manual segmenation (see data description in the paper [link to paper:](https://arxiv.org/abs/2103.01141)]) into a unique folder: /DATASET/all_images/images for the images and /DATASET/all_masks/masks for the masks. This script also correct the masks removin small sporious object and thresholding the mask with more than two grayscales values (0 for the background and 255 for the pixels of the cells).
 
-5. **011_load_images.py**: Split the dataset into train-validation and test. Without any additional arguments the split will be the same used in the paper. For example, if you want to use a different split run whit the additional arguments: 
+5. **011_load_images.py**: Split the dataset into train-validation and test. Without any additional arguments the split will be the same used in the paper. For example, if you want to use a different split run this script whit an additional arguments: 
 python 011_load_images.py --random_test_set True
   
 If you already run this script previusly take care to add  **--start_from_zero True** flag to remove the previous images in the destination folder
 
-6. **020_cropper_yellow.py**: Crop the images and masks to make smaller picture for the training of the network. The default size of the crops will be the same used in the referenced paper. To make crops of different features check the help description of the script
+6. **020_cropper_yellow.py**: Crop the images and masks into smaller picture for the training of the network. The default size of the crops will be the same used in the referenced paper. To make crops whit different features check the help description of the script.
 
 If you already run this script previusly take care to add  **--start_from_zero True** flag to remove the previous images in the destination folder
   
-7. **030_weights_maker.py**: Desing the weighted maps as described in the paper. No additional arguments to reproduce the same  
-masks of the paper. 
+7. **030_weights_maker.py**: Desing the weighted maps as described in the paper. No additional arguments are required to reproduce the same masks of the paper. Some default parameters (like the sigma factor) can be changed following the help decription.
   
 **NOTE**: If random split was used running the **011_load_images.py** script, it is needed to find a new maximum value to normalize the weighted maps using the following instruction:
   
@@ -72,7 +71,7 @@ masks of the paper.
   
 If you already run this script previusly take care to add  **--start_from_zero True** flag to remove the previous images in the destination folder
 
-8. **040_augumentation_yellow.py**: Augmentation process to increase the number of training-validation images. Use the help to define the augmentation factor both for the images segmented automatically and those segmented manually. Also define to adopt or not a strategy for the artifact augmentation. No additional argument aim to reproduce the augumentation pipeline described in the paper. It is worth to remember that the augumentation will produce different images from those used in the paper due to the random nature of the augmentation process.
+8. **040_augumentation_yellow.py**: Define the augmentation process to increase the number of the training-validation images. Use the help to define the augmentation factor both for the images segmented automatically and those segmented manually. Also, it is possible to select or not a strategy for the artifact augmentation. As usualua, with no additional arguments the script  reproduce the same augumentation pipeline described in the paper. It is worth to remember that the augumentation will produce different images from those used in the paper due to the random nature of the augmentation process.
   
 If you already run this script previusly take care to add  **--start_from_zero True** flag to remove the previous images in the destination folder
   
