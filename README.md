@@ -85,6 +85,8 @@ If you already run this script previusly take care to add  **--start_from_zero T
 ### Evaluation
 11. **evaluate_model.py**
 12. **evaluation_utils.py**
+13. **visualitazione_utils.py**
+14. **compare_weights_effect.py**
   
 ### Notebooks
   
