@@ -20,7 +20,16 @@ Once the zip file is here:
 2. Move the Fluorescent_Neuronal_Cells.zip into the DATASET folder
 3. Unzip the Fluorescent_Neuronal_Cells.zip
 
+### Code
 
+1. 010_join_images: Join the images coming from the automatic and the manual segmenation (see description in the paper [link to paper:](https://arxiv.org/abs/2103.01141)]) into one unique folder (/DATASET/all_images/images for the images and /DATASET/all_masks/masks for the masks). This script also correct the masks with more than two grayscales values (0 for the background and 255 for the pixels of the cells).
+
+Run in this way: python 010_join_images.py
+
+2. 011_load_images.py: Split the dataset into train-validation and test.
+- To run with the same splits used in the paper: python 011_load_images.py
+- If you want to use a different split run whit the additional arguments: python 011_load_images.py --random_test_set True
+If you already run this script previusoly take care to add  **--start_from_zero True** flag to remove the previous images in the destination folder
 
 
 
