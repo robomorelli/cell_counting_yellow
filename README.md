@@ -31,18 +31,31 @@ python <script name> -h
 
 ### Scripts description
 #### Preprocessing scripts
-1. **010_join_images**: Join the images and the relative masks coming from the automatic and the manual segmenation (see data description in the paper [link to paper:](https://arxiv.org/abs/2103.01141)]) into one unique folder: /DATASET/all_images/images for the images and /DATASET/all_masks/masks for the masks. This script also correct the masks images with more than two grayscales values (0 for the background and 255 for the pixels of the cells).
+1. **010_join_images.py**: Join the images and the relative masks coming from the automatic and the manual segmenation (see data description in the paper [link to paper:](https://arxiv.org/abs/2103.01141)]) into one unique folder: /DATASET/all_images/images for the images and /DATASET/all_masks/masks for the masks. This script also correct the masks images with more than two grayscales values (0 for the background and 255 for the pixels of the cells).
 
 
-2. **011_load_images.py**: Split the dataset into train-validation and test. Without any additional arguments the split will be the same used in the paper. If you want to use a different split run whit the additional arguments: 
+2. **011_load_images.py**: Split the dataset into train-validation and test. Without any additional arguments the split will be the same used in the paper. For example, if you want to use a different split run whit the additional arguments: 
 python 011_load_images.py --random_test_set True
   
 If you already run this script previusly take care to add  **--start_from_zero True** flag to remove the previous images in the destination folder
 
 3. **020_cropper_yellow.py**: Crop the images and masks to make smaller picture for the training of the network. The default size of the crops will be the same used in the referenced paper. To make crops of different features check the help description of the script
-  
-4. **030_weights_maker.py**: Desing the weighted maps as described in the paper. No additional arguments to reproduce the same 
 
+If you already run this script previusly take care to add  **--start_from_zero True** flag to remove the previous images in the destination folder
+  
+4. **030_weights_maker.py**: Desing the weighted maps as described in the paper. No additional arguments to reproduce the same  
+masks of the paper. 
+  
+**NOTE**: If random split was used running the **011_load_images.py** script, it is needed to find a new maximum value to normalize the weighted maps using the following instruction:
+  
+  python 030_weight_maker.py --normalize True --continue_after_normalization True
+  
+  or in a 2-step process:
+  
+  1. python 030_weight_maker.py --normalize True
+  2. python 030_weight_maker.py --resume_after_normalization True
+  
+If you already run this script previusly take care to add  **--start_from_zero True** flag to remove the previous images in the destination folder
 
 
 
