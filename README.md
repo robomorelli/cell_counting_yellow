@@ -10,6 +10,8 @@ The dataset used in the paper ...
 
 Check the requirements.txt file for the dependencies
 
+A docker recipe is provided to build an enviroment to run this project.
+
 ## Dataset
 
 You should copy zip of dataset (Fluorescent Neuronal Cells) inside the **main directory** of the repository
@@ -34,7 +36,7 @@ python <script name> -h
   
 1. **config.py**: Define all the default path where images and mask are saved and preprocessed. Also, some pre-defined variables like the height and the widht of the images contained in the Fluorescent Neuronal Cells dataset.
   
-#### Preprocessing Utils
+#### Preprocessing utils
 2. **utils.py**: Contain all the function imported during the different preprocessing steps. These functions are used mainly to define the following utilities:
   - I/O of the images
   - Images cropping
@@ -74,8 +76,9 @@ If you already run this script previusly take care to add  **--start_from_zero T
   
 If you already run this script previusly take care to add  **--start_from_zero True** flag to remove the previous images in the destination folder
   
+### Training
 
-
+9. **050_dev_model.py**: Train a convolutional neural network on the Fluorescent Neuronal Cells dataset. Without additional arguments the ResUnet describer in the paper as c-Resunet.
 
 DOCKER instruction
 
