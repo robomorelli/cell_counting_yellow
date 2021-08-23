@@ -14,7 +14,7 @@ A docker recipe is provided to build an enviroment to run this project.
 
 ## Dataset
 
-You should copy zip of dataset (Fluorescent Neuronal Cells) inside the **main directory** of the repository
+You should copy the zip of the dataset (Fluorescent Neuronal Cells) inside the **main directory** of the repository
 
 Once the zip file is here:
 
@@ -34,7 +34,7 @@ python <script name> -h
 ### Scripts description
 #### Configuration 
   
-1. **config.py**: Define all the default path where images and mask are saved and preprocessed. Also, some pre-defined variables like the height and the widht of the images contained in the Fluorescent Neuronal Cells dataset.
+1. **config.py**: Define all the default directory where to save the images and the masks. Also, some pre-defined variables like the height and the widht of the images contained in the Fluorescent Neuronal Cells dataset.
   
 #### Preprocessing utils
 2. **utils.py**: Contain all the function imported during the different preprocessing steps. These functions are used mainly to define the following utilities:
@@ -78,9 +78,18 @@ If you already run this script previusly take care to add  **--start_from_zero T
   
 ### Training
 
-9. **050_dev_model.py**: Train a convolutional neural network on the Fluorescent Neuronal Cells dataset. Without additional arguments the ResUnet described in the paper as c-Resunet is trained. To train another architecture use the **--model_name** argument. Options are: [ResUnet, ResUnetBasic, Unet, UnetOriginal]. Check the help to modify other training parameters like the classes' loss weight. Default are 1.5 for white pixels (cell class) and 1 for black pixel (no cell class).
-
-DOCKER instruction
+9. **050_dev_model.py**: Train a convolutional neural network on the Fluorescent Neuronal Cells dataset. Without additional arguments the ResUnet described in the paper as c-Resunet is trained. To train another architecture use the **--model_name** argument. Options are: [ResUnet, ResUnetBasic, Unet, UnetOriginal]. Check the help to modify other training parameters like the classes' loss weight: default are 1.5 for white pixels (cell class) and 1 for black pixel (no cell class).
+  
+10. **060_split_file.py**: Utility to split the train-val set in subfolder containing 1000 images each. This procedure is **suggested only for training on a cluster** because the I/O operations on smaller files are preferred in this case. 
+  
+### Evaluation
+11. **evaluate_model.py**
+12. **evaluation_utils.py**
+  
+### Notebooks
+  
+  
+### Docker container (TO DO)
 
 -Build the image from dockerfile
 docker build -t .
