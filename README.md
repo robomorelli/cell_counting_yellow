@@ -1,35 +1,47 @@
 # cell_counting_yellow
-This is the code implementation of the work described here [link to paper: *Automatic Cell Counting in Flourescent Microscopy Using Deep Learning*](https://arxiv.org/abs/2103.01141)]
+This is the code implementation of the work described here: [link to paper: *Automatic Cell Counting in Flourescent Microscopy Using Deep Learning*](https://arxiv.org/abs/2103.01141)]
 
 # Data Overview
 The dataset used in the paper ...
 
 # How to use
 
-### Dependencies
+## Dependencies
 
 Check the requirements.txt file for the dependencies
 
-### Dataset
+## Dataset
 
 You should copy zip of dataset (Fluorescent Neuronal Cells) inside the **main directory** of the repository
 
 Once the zip file is here:
 
-1. Create a folder named DATASET
+1. Create a new folder named DATASET
 2. Move the Fluorescent_Neuronal_Cells.zip into the DATASET folder
 3. Unzip the Fluorescent_Neuronal_Cells.zip
 
-### Code
+## Code
 
-1. 010_join_images: Join the images coming from the automatic and the manual segmenation (see description in the paper [link to paper:](https://arxiv.org/abs/2103.01141)]) into one unique folder (/DATASET/all_images/images for the images and /DATASET/all_masks/masks for the masks). This script also correct the masks with more than two grayscales values (0 for the background and 255 for the pixels of the cells).
+### Preliminary remark
+1. All the scripts are provided with an **help description** to invoke as follow:
+python <script name> -h
+2. To reproduce the paper results, all the scripts should be launched without additional arguments (default mode)
+3. Each time you run again one of the preprocessing scripts going from 011 to 040, take care to remove the images-masks produced at the previous run setting the **--start_from_zero True** flag
+  
 
-Run in this way: python 010_join_images.py
+### Scripts description
+#### Preprocessing scripts
+1. **010_join_images**: Join the images and the relative masks coming from the automatic and the manual segmenation (see data description in the paper [link to paper:](https://arxiv.org/abs/2103.01141)]) into one unique folder: /DATASET/all_images/images for the images and /DATASET/all_masks/masks for the masks. This script also correct the masks images with more than two grayscales values (0 for the background and 255 for the pixels of the cells).
 
-2. 011_load_images.py: Split the dataset into train-validation and test.
-- To run with the same splits used in the paper: python 011_load_images.py
-- If you want to use a different split run whit the additional arguments: python 011_load_images.py --random_test_set True
-If you already run this script previusoly take care to add  **--start_from_zero True** flag to remove the previous images in the destination folder
+
+2. **011_load_images.py**: Split the dataset into train-validation and test. Without any additional arguments the split will be the same used in the paper. If you want to use a different split run whit the additional arguments: 
+python 011_load_images.py --random_test_set True
+  
+If you already run this script previusly take care to add  **--start_from_zero True** flag to remove the previous images in the destination folder
+
+3. **020_cropper_yellow.py**: Crop the images and masks to make smaller picture for the training of the network. The default size of the crops will be the same used in the referenced paper. To make crops of different features check the help description of the script
+  
+4. **030_weights_maker.py**: Desing the weighted maps as described in the paper. No additional arguments to reproduce the same 
 
 
 
