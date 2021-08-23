@@ -97,3 +97,4 @@ run jupyter directly from docker:
 docker run -it -p 8888:8888 -v ${PWD}/DATASET:/app/DATASET cell -c "jupyter notebook --port=8888 --no-browser --ip=0.0.0.0 --allow-root"
 
 connect following the instruction displayed on the terminal
+  
