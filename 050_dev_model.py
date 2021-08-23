@@ -707,7 +707,7 @@ if __name__ == "__main__":
 
     parser.add_argument('--images', nargs="?", default = AugCropImages, help='path including images for training')
     parser.add_argument('--masks', nargs="?", default = AugCropMasks, help='path including masks for training')
-    parser.add_argument('--model_name',type=str, default = 'ResUnet',  help='model name')
+    parser.add_argument('--model_name',type=str, default = 'ResUnet',  help='model name. Options are [ResUnet, ResUnetBasic, Unet, UnetOriginal]')
     parser.add_argument('--activation',type=str, default = 'elu',  help='activation')
 
     parser.add_argument('--model_results', nargs="?", default = ModelResults, help='path where to save the models')

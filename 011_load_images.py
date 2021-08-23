@@ -81,7 +81,7 @@ def main():
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description='Define parameters for crop.')
+    parser = argparse.ArgumentParser(description='Define parameters for test.')
     parser.add_argument('--start_from_zero', action='store_const', const=True, default=False,
                         help='remove previous file in the destination folder')
     parser.add_argument('--random_test_set', action='store_const', const=True, default=False,

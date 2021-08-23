@@ -36,11 +36,11 @@ def main():
             img_y = cv2.cvtColor(img_y, cv2.COLOR_BGR2RGB)[:, :, 0:1]
 
         if len(np.unique(img_y)) > 2:
-            print('prima più di due valori{} {} {}'.format(ix, name, np.unique(img_y)))
+            print('before the threshold we have more than 2 grayscale values {} {} {}'.format(ix, name, np.unique(img_y)))
 
             ret, img_y = cv2.threshold(img_y, 75, 255, cv2.THRESH_BINARY)
 
-            print('dopo invece {} {} {}'.format(ix, name, np.unique(img_y)))
+            print('after the threshold we have {} {} {}'.format(ix, name, np.unique(img_y)))
 
         img_y = img_y.astype(bool)
         img_y = remove_small_objects(img_y, min_size=25)
@@ -58,7 +58,7 @@ def main():
     new_masks.sort()
 
     idx = 0
-    shift = 252 #pay attention to set oslistdir:imagine to run again >>> it wil be 272 and not 252
+    shift = 252 #pay attention to set oslistdir:imagine to run again >>> it will be 272 and not 252
     for im_name, mask_name in tqdm(zip(new_images, new_masks), total=len(new_images)):
 
         print(im_name)

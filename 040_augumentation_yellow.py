@@ -51,11 +51,11 @@ if __name__ == "__main__":
 
     print(id_new_images)
 
-    parser = argparse.ArgumentParser(description='Define augmentation setting....default running follow paper requirements')
+    parser = argparse.ArgumentParser(description='Define augmentation setting....default mode to follow the paper description')
     parser.add_argument('--start_from_zero',action='store_true', help='remove previous file in the destination folder')
 
-    parser.add_argument('--split_num', nargs="?", type=int, default=4, help='width of the crop')
-    parser.add_argument('--split_num_new_images', nargs="?", type=int, default=10, help='height of the crop')
+    parser.add_argument('--split_num', nargs="?", type=int, default=4, help='augmentation factor for the images segmented automatically')
+    parser.add_argument('--split_num_new_images', nargs="?", type=int, default=10, help='augmentation factor fot the images segmented manually')
 
     parser.add_argument('--no_copy_images', action='store_const', const=True, default=False,
                         help='copy cropped in crop_aug images')
@@ -63,7 +63,7 @@ if __name__ == "__main__":
                         help='copy cropped in crop_aug masks')
 
     parser.add_argument('--unique_split', type=int, default=0,
-                        help='default is 0, define a different number and wil be the unique split for all the images')
+                        help='default is 0, define a different number and the same split factor will be used for all the images (automatically and manually segmented)')
     parser.add_argument('--no_artifact_aug', action='store_const', const=True, default=False,
                         help='run basic augmentation')
 
