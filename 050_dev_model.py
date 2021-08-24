@@ -143,7 +143,7 @@ def imageGenerator(color_mode = 'rgb'):
     return train_generator, valid_generator
 
 
-def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
+def c_resunet(train_generator, valid_generator, weights , class_0_w , class_1_w,
              n , activation, model_name, compiler, gpus, cluster):
 
     inputs = Input((None, None, 3))
@@ -318,7 +318,7 @@ def ResUnet(train_generator, valid_generator, weights , class_0_w , class_1_w,
                                       epochs=200)
 
 
-def ResUnetBasic(train_generator, valid_generator, weights , class_0_w , class_1_w,
+def resunet(train_generator, valid_generator, weights , class_0_w , class_1_w,
              n , activation, model_name, compiler, gpus, cluster):
 
     inputs = Input((None, None, 3))
@@ -475,8 +475,10 @@ def ResUnetBasic(train_generator, valid_generator, weights , class_0_w , class_1
                                       validation_steps=valid_number/VALID_BATCH_SIZE,
                                       callbacks=callbacks,
                                       epochs=200)
-
-def Unet(train_generator, valid_generator, weights , class_0_w , class_1_w,
+### NOT TRAINED in the paper #####
+### NOT TRAINED in the paper #####
+### NOT TRAINED in the paper #####
+def shorter_unet(train_generator, valid_generator, weights , class_0_w , class_1_w,
              n , model_name, compiler, gpus, cluster):
 
 
@@ -588,7 +590,7 @@ def Unet(train_generator, valid_generator, weights , class_0_w , class_1_w,
                                       callbacks=callbacks,
                                       epochs=200)
 
-def UnetOriginal(train_generator, valid_generator, weights , class_0_w , class_1_w,
+def unet(train_generator, valid_generator, weights , class_0_w , class_1_w,
              n , model_name, compiler, gpus, cluster):
 
     inputs = Input((None, None, 3))
@@ -707,7 +709,7 @@ if __name__ == "__main__":
 
     parser.add_argument('--images', nargs="?", default = AugCropImages, help='path including images for training')
     parser.add_argument('--masks', nargs="?", default = AugCropMasks, help='path including masks for training')
-    parser.add_argument('--model_name',type=str, default = 'ResUnet',  help='model name. Options are [ResUnet, ResUnetBasic, Unet, UnetOriginal]')
+    parser.add_argument('--model_name',type=str, default = 'ResUnet',  help='model name. Options are [c_resunet, resunet, unet, small_unet]')
     parser.add_argument('--activation',type=str, default = 'elu',  help='activation')
 
     parser.add_argument('--model_results', nargs="?", default = ModelResults, help='path where to save the models')
@@ -788,28 +790,31 @@ if __name__ == "__main__":
     #batch size, img size # model, #n, #map_weight,#name model# color_mode
     train_generator, valid_generator = imageGenerator(color_mode='rgb')
 
-    if 'resunetbasic' in args.model_name.lower():
-        print('ResUnetbasic')
-        ResUnetBasic(train_generator,valid_generator, weights = args.weights, class_0_w = args.class_weights[0]
+    if 'resunet' in args.model_name.lower():
+        print('ResUnet')
+        resunet(train_generator,valid_generator, weights = args.weights, class_0_w = args.class_weights[0]
                 , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n, activation=args.activation,
                 compiler = args.compiler, gpus = args.gpus, cluster=cluster)
 
-    elif 'resunet' in args.model_name.lower():
-        print('ResUnet')
-        ResUnet(train_generator,valid_generator, weights = args.weights, class_0_w = args.class_weights[0]
+    elif 'c_resunet' in args.model_name.lower():
+        print('c-ResUnet')
+        c_resunet(train_generator,valid_generator, weights = args.weights, class_0_w = args.class_weights[0]
                 , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n, activation = args.activation,
                 compiler = args.compiler, gpus = args.gpus, cluster=cluster)
 
 
-    elif 'unetoriginal' in args.model_name.lower(): #n should be 8
-        print('UnetOriginal')
-        Unet(train_generator,valid_generator, weights = args.weights, class_0_w = args.class_weights[0]
+    elif 'unet' in args.model_name.lower(): #n should be 8
+        print('Unet')
+	if args.n==4:
+	    print('changing default m.arg=4 to n.args=8, if you want to use n.arg=4 instead, use model_name=small_unet')
+	    args.n=8
+        unet(train_generator,valid_generator, weights = args.weights, class_0_w = args.class_weights[0]
                 , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n,
                 compiler = args.compiler, gpus = args.gpus, cluster=cluster)
 
-    elif 'unet' in args.model_name.lower():
-        print('Unet')
-        Unet(train_generator,valid_generator, weights = args.weights, class_0_w = args.class_weights[0]
+    elif 'small_unet' in args.model_name.lower():
+        print('small Unet')
+        unet(train_generator,valid_generator, weights = args.weights, class_0_w = args.class_weights[0]
                 , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n,
                 compiler = args.compiler, gpus = args.gpus, cluster=cluster)
 
