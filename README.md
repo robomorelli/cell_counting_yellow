@@ -77,7 +77,7 @@ If you already run this script previusly take care to add  **--start_from_zero T
   
 ### Training
 
-9. **050_dev_model.py**: Train a convolutional neural network on the Fluorescent Neuronal Cells dataset. Without additional arguments the ResUnet described in the paper as c-Resunet is trained. To train another architecture use the **--model_name** argument. Options are: [ResUnet, ResUnetBasic, Unet, UnetOriginal]. Check the help to modify other training parameters like the classes' loss weight: default are 1.5 for white pixels (cell class) and 1 for black pixel (no cell class).
+9. **050_dev_model.py**: Train a convolutional neural network on the Fluorescent Neuronal Cells dataset. Without additional arguments the ResUnet described in the paper as c-Resunet is trained. To train another architecture use the **--model_name** argument. Options are: [c_resunet, resunet, unet, small_unet]. Check the help to modify other training parameters like the classes' loss weight: default are 1.5 for white pixels (cell class) and 1 for black pixel (no cell class).
   
 10. **060_split_file.py**: Utility to split the train-val set in subfolder containing 1000 images each. This procedure is **suggested only for training on a cluster** because the I/O operations on smaller files are preferred in this case. 
   
