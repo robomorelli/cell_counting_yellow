@@ -20,12 +20,15 @@ if __name__ == "__main__":
     from keras.models import load_model
     from evaluation_utils import *
 
+    plt.rcParams['font.family'] = 'DeJavu Serif'
+    plt.rcParams['font.serif'] = ['Helvetica']
+    plt.rcParams["font.size"] = "16"
     # setup paths --> NOTE: CURRENT PATHS ARE TO BE UPDATED
     # repo_path = Path("/storage/gpfs_maestro/hpc/user/rmorellihpc/cell_counting_yellow")
     repo_path = Path("/home/luca/PycharmProjects/cell_counting_yellow")
     data_path = '/home/luca/PycharmProjects/cell_counting_yellow/DATASET/test/all_images/images'
 
-    save_path = repo_path / 'weights_map'
+    save_path = repo_path / 'results' / 'weights_map'
     save_path.mkdir(parents=True, exist_ok=True)
     save_path.chmod(16886)  # chmod 776
 
@@ -110,4 +113,4 @@ if __name__ == "__main__":
     # cbar.ax.set_yticklabels(['0', '0.2', '0.4', '0.6', '0.8', '1'])
     plt.show()
 
-    fig.savefig(save_path / 'weigths_effect.png', dpi=300, transparent=True)
+    fig.savefig(save_path / 'weigths_effect.png', dpi=300, transparent=True, bbox_inches='tight')
