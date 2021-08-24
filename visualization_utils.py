@@ -37,7 +37,7 @@ plt.rcParams['font.serif'] = ['Helvetica']
 plt.rcParams["font.size"] = "16"
 
 
-def plot_predicted_heatmaps(model, test_img_path, test_masks_path, head=None, suptitle=True):
+def plot_predicted_heatmaps(model, test_img_path, test_masks_path, head=None, suptitle=True, example_only=False):
     '''Plot original image with true objects and the predicted heatmap.
     
     Keyword arguments:
@@ -45,13 +45,17 @@ def plot_predicted_heatmaps(model, test_img_path, test_masks_path, head=None, su
     test_img_path -- path where the images to be plotted are stored
     test_masks_path -- path where the relative masks are stored
     head -- either None or the number of plots to display
+    suptitle -- whether to plot the image name as suptitle
+    example_only -- whether to plot only 278.tiff as an example
    
     Return: None.
     '''
     counter = 0
     for idx, img_path in enumerate(test_img_path.iterdir()):
-        if img_path.name != '278.tiff':
-            continue
+        ext = img_path.name.split('.')[1]
+        if example_only:
+            if img_path.name != f'278.{ext}':
+                continue
 
         if not img_path.name.startswith("aug_"):
 
@@ -163,7 +167,7 @@ def compare_heatmaps(models_dict, test_img_path, test_masks_path, head=None):
     return (None)
 
 
-def plot_postprocessing_effect(model, test_img_path, threshold, head=None, suptitle=True):
+def plot_postprocessing_effect(model, test_img_path, threshold, head=None, suptitle=True, example_only=False):
     '''Plot original image with true objects and the predicted heatmap.
 
     Keyword arguments:
@@ -171,6 +175,8 @@ def plot_postprocessing_effect(model, test_img_path, threshold, head=None, supti
     test_img_path -- path where the images to be plotted are stored
     test_masks_path -- path where the relative masks are stored
     head -- either None or the number of plots to display
+    suptitle -- whether to plot the image name as suptitle
+    example_only -- whether to plot only 278.tiff as an example
 
     Return: None.
     '''
@@ -190,8 +196,10 @@ def plot_postprocessing_effect(model, test_img_path, threshold, head=None, supti
 
     counter = 0
     for idx, img_path in enumerate(test_img_path.iterdir()):
-        if img_path.name != '278.tiff':
-            continue
+        ext = img_path.name.split('.')[1]
+        if example_only:
+            if img_path.name != f'278.{ext}':
+                continue
 
         if not img_path.name.startswith("aug_"):
 
