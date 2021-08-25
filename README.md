@@ -76,7 +76,7 @@ cell_counting_yellow/
 ├── notebooks
 └── results
 ```
-### Note: `010_join_images.py` and `011_load_images.py` refer to a previous version of the dataset and are replaced by `010_split_data.py`.
+Note: `010_join_images.py` and `011_load_images.py` refer to a previous version of the dataset and are replaced by `010_split_data.py`.
 
 ### Customization
 
