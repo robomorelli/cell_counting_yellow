@@ -17,7 +17,7 @@ parser.add_argument('--mode', metavar='mode', type=str, default="eval",
                             - test_code --> for testing changes in the code
                             """)
 parser.add_argument('--threshold', metavar='threshold', type=str,  default='grid',
-                    help='Whether to use best threshold (i.e. optimized on the validation set) or grid of values')
+                    help='Whether to use a threshold optimized on the validation set (`best` for argmax or `knee` for kneedle) or grid of values')
 args = parser.parse_args()
 
 from pathlib import Path
