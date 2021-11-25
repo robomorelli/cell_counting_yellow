@@ -137,6 +137,7 @@ To reproduce the results of the paper run:
 # run grid search on the train/val split (full-size images only)
 python evaluate_model.py --mode eval --threshold grid --out_folder results/ <model_name>
 
+
 # evaluate the performance on the test set with the optimal threshold according to the kneedle method
 python evaluate_model.py --mode test --threshold knee --out_folder results/ <model_name>
 ```
