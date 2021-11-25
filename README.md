@@ -32,14 +32,14 @@ docker run -it -p 8888:8888 -v ${PWD}/DATASET:/app/DATASET cell -c "jupyter note
 
 connect following the instruction displayed on the terminal
 
-### Dataset
+## Dataset
 
 The data consist of 283 high-resolution pictures (1600x1200 pixels) of mice brain slices acquired through a fluorescence
 microscope. The final goal is to individuate and count neurons highlighted in the pictures by means of a marker, so to
-assess the result of a biological experiment. For more information, please refer to [1, 2]. The corresponding ground-truth
-labels were generated through a hybrid approach involving semi-automatic and manual semantic segmentation. The result
-consists of black (0) and white (255) images having pixel-level annotations of where the neurons are located. Possible
-applications include but are not limited to *semantic segmentation*, *object detection*
+assess the result of a biological experiment. For more information, please refer to [1, 2]. The corresponding
+ground-truth labels were generated through a hybrid approach involving semi-automatic and manual semantic segmentation.
+The result consists of black (0) and white (255) images having pixel-level annotations of where the neurons are located.
+Possible applications include but are not limited to *semantic segmentation*, *object detection*
 and *object counting*.
 
 After cloning the repository, you can download the data from the **Fluorescent Neuronal
@@ -148,11 +148,15 @@ Some useful notebooks are provided to visualize the output of the training and c
 
 - `Compare_models.ipynb`: compares the heatmaps and the object detection abilities of multiple models side-by-side
 - `Visualize_results.ipynb`: shows the effect of the post-processing pipeline for a given model
+- `Visualize Hidden Features.ipynb`: plots features computed by intermediate layers
+- `Export weights.ipynb`: transform Keras weights in a state_dict-like format and exports them as pickle files
 
 ### References
 
-[[1]](https://doi.org/10.1038/s41598-021-01929-5) Morelli, R., Clissa, L., Amici, R. et al. Automating cell counting in fluorescent microscopy through deep learning with c-ResUnet. Sci Rep 11, 22920 (2021). https://doi.org/10.1038/s41598-021-01929-5. 
+[[1]](https://doi.org/10.1038/s41598-021-01929-5) Morelli, R., Clissa, L., Amici, R., Cerri, M., Hitrec, T., Luppi, M.,
+Rinaldi, L., Squarcio, F. and Zoccoli, A. Automating cell counting in fluorescent microscopy through deep learning with
+c-ResUnet. Sci Rep 11, 22920 (2021). https://doi.org/10.1038/s41598-021-01929-5.
 
 [[2]](https://www.nature.com/articles/s41598-019-51841-2) Hitrec, T., Luppi, M., Bastianini, S., Squarcio, F.,
-    Berteotti, C., Martire, V.L., Martelli, D., Occhinegro, A., Tupone, D., Zoccoli, G. and Amici, R., 2019. Neural control
-    of fasting-induced torpor in mice. Scientific reports, 9(1), pp.1-12.
+Berteotti, C., Martire, V.L., Martelli, D., Occhinegro, A., Tupone, D., Zoccoli, G. and Amici, R., 2019. Neural control
+of fasting-induced torpor in mice. Scientific reports, 9(1), pp.1-12.
