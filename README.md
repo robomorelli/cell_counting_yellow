@@ -1,7 +1,10 @@
 # Cell counting
 
-This repository is the code implementation of the work [*Automating cell counting in fluorescent microscopy through deep
-learning with c-ResUnet*](https://www.nature.com/articles/s41598-021-01929-5)
+This repository is the code implementation of the work [Morelli, R., Clissa, L., Amici, R. et al. 
+*Automating cell counting in fluorescent microscopy through deep learning with c-ResUnet.* Sci Rep 11, 22920 (
+2021)](https://www.nature.com/articles/s41598-021-01929-5).
+
+![image info](./cover.jpg)
 
 ## Installation
 
