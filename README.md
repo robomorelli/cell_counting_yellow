@@ -1,4 +1,4 @@
-# Cell counting
+# Cell Counting in Fluorescence Microscopy
 
 This repository is the code implementation of the work [Morelli, R., Clissa, L., Amici, R. et al. 
 *Automating cell counting in fluorescent microscopy through deep learning with c-ResUnet.* Sci Rep 11, 22920 (
