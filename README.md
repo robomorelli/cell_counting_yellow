@@ -8,7 +8,7 @@ This repository is the code implementation of the work [Morelli, R., Clissa, L.,
 
 ## Installation
 
-### pip
+### pip(NOT RECOMMENDED)
 
 ```commandline
 git clone git@github.com:robomorelli/cell_counting_yellow.git
@@ -20,8 +20,8 @@ pip install requirements.txt
 
 -Build the image from dockerfile docker build -t .
 
--Run the image:
-docker run --rm -it -p 8888:8888 -v ${PWD}/DATASET:app/DATASET cell
+-Run the image and start a jupyter session:
+docker run --rm -it -p 8888:8888 -v /c/Users/t_kaz/Documents/PjRe/gitSource/cell_counting_yellow/DATASET:/app/DATASET cell-pj -c "jupyter notebook --port=8888 --no-browser --ip=0.0.0.0 --allow-rot"
 
 Run initialize a shell session inside the container where it is possible to run the scripts and a jupyter session with
 the command:
