@@ -86,6 +86,7 @@ if __name__ == "__main__":
                         help='run basic augmentation')
 
     args = parser.parse_args()
+    
 
     if args.start_from_zero:
         print('deleting existing files in destination folder')
@@ -137,7 +138,16 @@ if __name__ == "__main__":
             if os.path.isfile(full_file_name):
                 shutil.copy(full_file_name, path_masks)
 
-    make_data_augmentation(image_ids, CropImages,  CropWeightedMasks, args.split_num, id_new_images,
-                           args.split_num_new_images, id_edges, path_images, path_masks,  shift
-                           , args.unique_split, args.no_artifact_aug
+    make_data_augmentation(image_ids,
+                            CropImages,
+                            CropWeightedMasks,
+                            args.split_num,
+                            id_new_images,
+                            args.split_num_new_images,
+                            id_edges,
+                            path_images,
+                            path_masks,
+                            shift,
+                            args.unique_split,
+                            args.no_artifact_aug
                            )
