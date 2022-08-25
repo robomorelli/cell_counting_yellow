@@ -8,7 +8,7 @@ This repository is the code implementation of the work [Morelli, R., Clissa, L.,
 
 ## Installation
 
-### pip(NOT RECOMMENDED)
+### pip (NOT RECOMMENDED)
 
 ```commandline
 git clone git@github.com:robomorelli/cell_counting_yellow.git
@@ -16,7 +16,7 @@ cd cell_counting_yellow
 pip install requirements.txt
 ```
 
-### docker (RECOMMENDED) 
+### Docker (RECOMMENDED) 
 
 -Build the image from dockerfile:
 ```commandline
@@ -93,6 +93,7 @@ cell_counting_yellow/
 │   ├── test
 │   ├── train_val
 │   └── test_split_map.csv
+├── model_results
 ├── notebooks
 └── results
 ```
