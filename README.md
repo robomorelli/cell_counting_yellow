@@ -18,7 +18,7 @@ pip install requirements.txt
 
 ### docker (RECOMMENDED) 
 
--Build the image from dockerfile
+-Build the image from dockerfile:
 ```commandline
 docker build -t .
 ```
@@ -93,7 +93,6 @@ cell_counting_yellow/
 │   ├── test
 │   ├── train_val
 │   └── test_split_map.csv
-├── model_results
 ├── notebooks
 └── results
 ```
@@ -119,7 +118,7 @@ starting with numbers) in order to perform the various steps of the analysis (de
   help decription.
 
 ```commandline
-  python 030_weight_maker.py --normalize True --continue_after_normalization True
+  python 030_weights_maker.py --normalize --continue_after_normalization
 ```
 
 - `040_augumentation_yellow.py`: Run the augmentation to increase the number of the training-validation images. Use the
