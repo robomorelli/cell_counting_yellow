@@ -123,9 +123,6 @@ starting with numbers) in order to perform the various steps of the analysis (de
 ```
 
 - `040_augumentation_yellow.py`: Run the augmentation to increase the number of the training-validation images. 
-  ```commandline
-  python 040_augumentation_yellow.py --start_from_zero
-  ```
   Use the
   help to define the augmentation factor both for the images segmented automatically and those segmented manually. Also,
   it is possible to select or not a strategy for the artifact augmentation. As usual, running without additional
