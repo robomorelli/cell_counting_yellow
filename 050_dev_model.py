@@ -816,16 +816,16 @@ if __name__ == "__main__":
         c_resunet(train_generator,valid_generator, weights = args.weights, class_0_w = args.class_weights[0]
                 , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n, activation = args.activation,
                 compiler = args.compiler, gpus = args.gpus, cluster=cluster)
-
-
+    
     elif 'unet' in args.model_name.lower(): #n should be 8
         print('Unet')
-	if args.n==4:
-	    print('changing default m.arg=4 to n.args=8, if you want to use n.arg=4 instead, use model_name=small_unet')
-	    args.n=8
-        unet(train_generator,valid_generator, weights = args.weights, class_0_w = args.class_weights[0]
-                , class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n,
-                compiler = args.compiler, gpus = args.gpus, cluster=cluster)
+    
+    if args.n == 4:
+        print('changing default m.arg=4 to n.args=8, if you want to use n.arg=4 instead, use model_name=small_unet')
+        args.n=8
+        unet(train_generator,valid_generator, weights = args.weights, class_0_w = args.class_weights[0],
+            class_1_w = args.class_weights[1], model_name = args.model_name + '.h5', n = args.n,
+            compiler = args.compiler, gpus = args.gpus, cluster=cluster)
 
     elif 'small_unet' in args.model_name.lower():
         print('small Unet')

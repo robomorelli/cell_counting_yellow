@@ -8,7 +8,7 @@ This repository is the code implementation of the work [Morelli, R., Clissa, L.,
 
 ## Installation
 
-### pip
+### pip (NOT RECOMMENDED)
 
 ```commandline
 git clone git@github.com:robomorelli/cell_counting_yellow.git
@@ -16,22 +16,39 @@ cd cell_counting_yellow
 pip install requirements.txt
 ```
 
-### docker (TO DO)
+### Docker (RECOMMENDED) 
 
--Build the image from dockerfile docker build -t .
+-Build the image from dockerfile:
+```commandline
+docker build -t .
+```
 
--Run the image:
-docker run --rm -it -p 8888:8888 -v ${PWD}/DATASET:app/DATASET cell
+-Run the image and start a jupyter session:
+```commandline
+#Linux
+docker run --rm -it -p 8888:8888 -v ${PWD}/DATASET:/app/DATASET cell
+
+#Windows
+docker run --rm -it -p 8888:8888 -v /c/Users/.../DATASET:/app/DATASET cell
+```
 
 Run initialize a shell session inside the container where it is possible to run the scripts and a jupyter session with
 the command:
+```commandline
 jupyter notebook --port=8888 --no-browser --ip=0.0.0.0 --allow-root
-
+```
 connect following the instruction displayed on the terminal
 
 run jupyter directly from docker:
-docker run -it -p 8888:8888 -v ${PWD}/DATASET:/app/DATASET cell -c "jupyter notebook --port=8888 --no-browser
+```commandline
+#Linux
+docker run --rm -it -p 8888:8888 -v ${PWD}/DATASET:/app/DATASET cell -c "jupyter notebook --port=8888 --no-browser
 --ip=0.0.0.0 --allow-root"
+
+#Windows
+docker run --rm -it -p 8888:8888 -v /c/Users/.../DATASET:/app/DATASET cell -c "jupyter notebook --port=8888 --no-browser
+--ip=0.0.0.0 --allow-root"
+```
 
 connect following the instruction displayed on the terminal
 
@@ -102,10 +119,11 @@ starting with numbers) in order to perform the various steps of the analysis (de
   help decription.
 
 ```commandline
-  python 030_weight_maker.py --normalize True --continue_after_normalization True
+  python 030_weights_maker.py --normalize --continue_after_normalization
 ```
 
-- `040_augumentation_yellow.py`: Run the augmentation to increase the number of the training-validation images. Use the
+- `040_augumentation_yellow.py`: Run the augmentation to increase the number of the training-validation images. 
+  Use the
   help to define the augmentation factor both for the images segmented automatically and those segmented manually. Also,
   it is possible to select or not a strategy for the artifact augmentation. As usual, running without additional
   arguments reproduce the same augumentation pipeline adopted in the paper. It is worth to remember that the
