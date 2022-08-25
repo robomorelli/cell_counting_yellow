@@ -23,7 +23,7 @@ pip install requirements.txt
 -Run the image and start a jupyter session:
 ```commandline
 #Linux
-docker run -it -p 8888:8888 -v ${PWD}/DATASET:/app/DATASET cell
+docker run --rm -it -p 8888:8888 -v ${PWD}/DATASET:/app/DATASET cell
 
 #Windows
 docker run --rm -it -p 8888:8888 -v /c/Users/.../DATASET:/app/DATASET cell
@@ -38,7 +38,7 @@ connect following the instruction displayed on the terminal
 
 run jupyter directly from docker:
 ```commandline
-docker run -it -p 8888:8888 -v ${PWD}/DATASET:/app/DATASET cell -c "jupyter notebook --port=8888 --no-browser
+docker run --rm -it -p 8888:8888 -v ${PWD}/DATASET:/app/DATASET cell -c "jupyter notebook --port=8888 --no-browser
 --ip=0.0.0.0 --allow-root"
 ```
 
