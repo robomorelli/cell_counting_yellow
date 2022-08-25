@@ -16,9 +16,12 @@ cd cell_counting_yellow
 pip install requirements.txt
 ```
 
-### docker (TO DO) on Linux
+### docker (RECOMMENDED) 
 
--Build the image from dockerfile docker build -t .
+-Build the image from dockerfile
+```commandline
+docker build -t .
+```
 
 -Run the image and start a jupyter session:
 ```commandline
@@ -38,7 +41,12 @@ connect following the instruction displayed on the terminal
 
 run jupyter directly from docker:
 ```commandline
+#Linux
 docker run --rm -it -p 8888:8888 -v ${PWD}/DATASET:/app/DATASET cell -c "jupyter notebook --port=8888 --no-browser
+--ip=0.0.0.0 --allow-root"
+
+#Windows
+docker run --rm -it -p 8888:8888 -v /c/Users/.../DATASET:/app/DATASET cell -c "jupyter notebook --port=8888 --no-browser
 --ip=0.0.0.0 --allow-root"
 ```
 
