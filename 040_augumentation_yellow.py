@@ -87,7 +87,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     
-
     if args.start_from_zero:
         print('deleting existing files in destination folder')
         if (args.no_artifact_aug) | (args.unique_split):
